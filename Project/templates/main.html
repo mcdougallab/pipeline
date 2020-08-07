@@ -1,0 +1,171 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+
+   
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>  
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
+
+  <style>
+      .lb-col {
+          text-align: center;
+          background-color: rgb(246, 248, 248);
+      }
+      .blue-col {
+          background-color: rgb(210, 224, 221);
+      }
+      .btn {
+          background-color: transparent;
+          color: teal;
+          border: transparent;
+      }
+      .btn1 {
+          background-color: transparent;
+          color: rgb(0, 0, 0);
+          border: transparent 0px;
+        }
+      .btn2 {
+          background-color: rgb(199, 213, 214);
+          color: rgb(0, 0, 0);
+          border: rgb(27, 54, 56);
+        }
+      .btn:hover {
+          background-color: transparent;
+      }
+      .border {
+        padding: 10px;
+      }
+      .navbar-for {
+          align-items: right;
+      }
+      .navbar-toggler {
+            position: absolute;
+            right: 0em;
+      } 
+      .dropdown-submenu {
+        position: relative;
+      }
+      .dropdown-submenu .dropdown-menu {
+        top: 0;
+        left: 100%;
+        margin-top: -1px;
+      }
+      .nav-item {
+        padding-right: 10px;
+      }
+      .col-md-1 {
+          margin-left: 25px;
+      }
+      .rightaligned {
+          text-align: start;
+      }
+      .gentable {
+        text-align:right;
+        width:180px;
+        border-bottom:1px solid rgb(233, 233, 233); 
+        padding-right: 5px;
+      }
+      .card {
+          background-color: transparent;
+          border: transparent;
+      }
+      .icon-bar {
+            color: black;
+            border-color: black;
+            background-color: black;
+      }
+      h1 {
+          font-size: 1.8rem;
+      }
+      h2 {
+          font-size: 1.5rem;
+      }
+      .lightgray {
+        background-color: lightgray;
+      }
+  </style>
+      <title>{{title}}</title>
+                                 
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->        
+
+    {% block head %}
+    {% endblock %}
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-light bg-light" style="border-bottom: 1px solid black">
+        <a class="navbar-brand" href="/">Alz-Explorer</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            {% if request.user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ request.user.username }}
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="padding:15px">
+                        <a class="dropdown-item" href="/logout?next={{request.get_full_path | urlencode}}">Logout</a>
+                    </div>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/login?next={{request.get_full_path | urlencode}}">Login</a>
+                </li>
+            {% endif %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-expanded="False">Analysis</a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="padding:15px">
+                    <a class="dropdown-item" href="/search-3-grams">Search 3-grams</a>
+                </div>
+            </li>
+          </ul>
+          <form class="form-inline navbar-form" action="/search">
+            <input class="form-control" name="q" type="text" placeholder="Search" disabled>
+            <button class="btn btn-success-outline" type="submit" disabled><i class="fa fa-search"></i></button>
+          </form>
+        </div>
+      </nav>
+
+
+  
+    <div class="row maincontainer" style="margin-left: 0.5em; margin-right: 0.5em;">
+    <!-- Page Content -->
+    <div class="container" style="padding-top: 1em">
+        {% block header %}
+        {% endblock %}
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Footer -->
+<footer>
+    <hr/>
+        This is an experimental website. Data is based on a 2017 or 2018 pubmed data pull. 
+        This data should be considered highly preliminary and should not be used for any purpose.
+    </div>
+</footer>
+
+    </div>
+
+</body>
+</html>
