@@ -4,9 +4,40 @@
 {% block content %}
     <div class="row">
         <div class="col-md-12">
-            Hello world.
+            {% if request.user.is_authenticated %}
+                <p>
+                    Welcome {{ request.user.username }}. When you are done here, you may <a href="{{pipelinebase}}/logout?next={{request.get_full_path | urlencode}}">logout</a>.
+                </p>
+                <p>
+                    You have access to the following pipeline stages:
+                </p>
+                <h2>
+                    Data Entry:
+                </h2>
+                <ul>
+                    <li>
+                        <a href="{{pipelinebase}}/triage">Triage</a>
+                    </li>
+                    <li><a href="{{pipelinebase}}/annotate">Annotate</a></li>
+                </ul>
+                <h2>
+                    Review:
+                </h2>
+                <ul>
+                    <li><a href="{{pipelinebase}}/review/added">Added</a></li>
+                    <li><a href="{{pipelinebase}}/review/discussion">For discussion</a></li>
+                    <li><a href="{{pipelinebase}}/review/rejected">Rejected</a></li>
+                  </div>
+                </ul>
+                <h2>
+                    <a href="{{pipelinebase}}/statistics">Statistics</a>
+                </h2>
+                
 
-            Edit of 1:24pm on August 7, 2020
+
+            {% else %}
+                You must <a href="{{pipelinebase}}/login?next={{request.get_full_path | urlencode}}">Login</a> to do anything here.
+            {% endif %}
         </div>
     </div>
 {% endblock %}

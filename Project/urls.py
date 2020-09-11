@@ -20,6 +20,7 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
+    re_path("^statistics$(?i)", views.statistics, name="statistics"),
     re_path("^login$(?i)", views.my_login, name="login"),
     re_path("^logout$(?i)", views.my_logout, name="logout"),
 ]

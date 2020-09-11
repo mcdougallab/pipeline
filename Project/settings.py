@@ -19,19 +19,29 @@ SETTINGS_PATH = "/home/bitnami/app-settings.json"
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 with open(SETTINGS_PATH) as f:
-    security = json.load(f)
+    app_settings = json.load(f)
 
+try:
+    pipelinebase = app_settings.get("pipelinebase", "")
+    if pipelinebase and (
+        not pipelinebase.startswith("http://")
+        and not pipelinebase.startswith("/")
+        and not pipelinebase.startswith("https://")
+    ):
+        app_settings["pipelinebase"] = f"/{pipelinebase}"
+except:
+    pass
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = security["secret_key"]
+SECRET_KEY = app_settings["secret_key"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["10.0.2.15", "localhost"]
+ALLOWED_HOSTS = ["10.0.2.15"]
 
 
 # Application definition
@@ -60,7 +70,7 @@ ROOT_URLCONF = "Project.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": ["/home/bitnami/apps/django/django_projects/Project/Project/templates"],
+        "DIRS": ["Project/templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -106,9 +116,15 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
 ]
 
 
@@ -130,3 +146,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = "/Project/static/"
+
+# avoids an issue where the system overrides this variable
+ALLOWED_HOSTS.append("localhost")

@@ -1,0 +1,38 @@
+{% extends "main.html" %}
+
+{% block head %}
+<script>
+    $(() => {
+        $('#counttable').bootstrapTable({
+            pagination: true,
+            search: true,
+            data: {{countjson | safe}},
+            formatSearch: () => 'filter'
+        });
+    });
+</script>
+<style>
+    #counttable > th, td {
+        margin-right: 1em;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <table id="counttable" data-toggle="counttable">
+                <thead>
+                    <tr>
+                        <th data-sortable="true" data-field="n">
+                            Status
+                        </th>
+                        <th data-sortable="true" data-field="c">
+                            Number of papers
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+{% endblock %}
