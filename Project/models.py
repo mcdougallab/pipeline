@@ -18,7 +18,7 @@ collection.update_many({"notes": None}, {"$set": {"notes": ""}})
 def statistics():
     return {
         "counts": {
-            status: collection.estimated_document_count({"status": status})
+            status: collection.count_documents({"status": status})
             for status in collection.distinct("status")
         }
     }

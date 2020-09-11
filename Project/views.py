@@ -51,12 +51,16 @@ def login_redirect(request):
 def statistics(request):
     if permissions.statistics(request):
         statistics = models.statistics()
+        print(f"statistics: {statistics}")
         context = {
             "countjson": json.dumps(
-                {
-                    "n": list(statistics["counts"].keys()),
-                    "c": list(statistics["counts"].values()),
-                }
+                [
+                    {
+                        "n": key,
+                        "c": value,
+                    }
+                    for key, value in statistics["counts"].items()
+                ]
             ),
             "title": f"{base_context['toolname']}: statistics",
         }
