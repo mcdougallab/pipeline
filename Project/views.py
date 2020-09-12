@@ -72,14 +72,16 @@ def statistics(request):
     else:
         return login_redirect(request)
 
+
 def _nicestr(item):
     if isinstance(item, list):
-        joiner = ', '
-        if any(',' in thing for thing in item):
-            joiner = '; '
+        joiner = ", "
+        if any("," in thing for thing in item):
+            joiner = "; "
         return joiner.join(thing for thing in item)
     else:
         return str(item)
+
 
 def browse(request, by=None, item=None):
     if by is None:
@@ -92,7 +94,10 @@ def browse(request, by=None, item=None):
             "title": f"{base_context['toolname']}: Browse: {by}",
             "browse_by": by,
             "countjson": json.dumps(
-                [{"n": key, "c": value} for key, value in models.browse_counts[by].items()]
+                [
+                    {"n": key, "c": value}
+                    for key, value in models.browse_counts[by].items()
+                ]
             ),
         }
         context.update(base_context)
@@ -102,17 +107,17 @@ def browse(request, by=None, item=None):
         all_data = models.get_papers(by, item)
         data = []
         for item2 in all_data:
-            result = {field: _nicestr(item2[field]) for field in item2['field_order']}
-            result['title'] = item2['title']
-            result['_id'] = str(item2['_id'])
-            result['status'] = item2['status']
+            result = {field: _nicestr(item2[field]) for field in item2["field_order"]}
+            result["title"] = item2["title"]
+            result["_id"] = str(item2["_id"])
+            result["status"] = item2["status"]
             data.append(result)
         context = {
             "title": f"{base_context['toolname']}: Browse: {by}: {item}",
             "browse_by": by,
             "browse_by_value": item,
-            "fieldnames": settings.app_settings['browse_fields'],
-            "countjson": json.dumps(data)
+            "fieldnames": settings.app_settings["browse_fields"],
+            "countjson": json.dumps(data),
         }
         context.update(base_context)
-        return render(request, "browse_by_value.html", context)        
+        return render(request, "browse_by_value.html", context)
