@@ -16,7 +16,11 @@
                 let url = $('#editurl').val();
                 let _id = edit_active_id;
                 $('#editmodal').modal('hide');
-                $.post("{{pipelinebase}}/update", {"mode": "updateinfo", "_id": _id, "content": title, "url": url}).fail(function() {document.write('update failed; reload?')}).done(function() {console.log('Successful update status:', _id, title, url);});
+                $.post(
+                    `{{pipelinebase}}/update/${_id}`, 
+                    {"title": title, "url": url}
+                ).fail(() => {document.write('update failed; reload?')})
+                .done(function() {console.log('Successful update status:', _id, title, url);});
                 $(`.paperlink[data-id="${_id}"]`).attr('href', url).text(title);
             });
         });

@@ -28,4 +28,5 @@ urlpatterns = [
     path("review/<slug:status>", views.review, name="review"),
     path("browse/<slug:by>", views.browse, name="browse"),
     path("browse", views.browse, name="browse"),
+    path("update/<slug:id>", views.update, name="update"),
 ]

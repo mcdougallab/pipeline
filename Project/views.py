@@ -176,3 +176,11 @@ def review(request, status=None):
     }
     context.update(base_context)
     return render(request, "review.html", context)
+
+
+def update(request, id=None):
+    if permissions.update(request):
+        models.update(id, title=request.POST.get("title"), url=request.POST.get("url"))
+        return HttpResponse("success")
+    else:
+        return HttpResponse("403 Forbidden", status=403)
