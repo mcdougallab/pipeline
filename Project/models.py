@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 from django.db import models
 from . import settings
 
@@ -52,3 +53,7 @@ def statistics():
 
 def get_papers(fieldname, fieldvalue):
     return list(collection.find({fieldname: fieldvalue}))
+
+
+def paper_by_id(paper_id):
+    return collection.find_one({"_id": ObjectId(paper_id)})

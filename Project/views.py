@@ -121,3 +121,21 @@ def browse(request, by=None, item=None):
         }
         context.update(base_context)
         return render(request, "browse_by_value.html", context)
+
+
+def _prep_paper_for_review(paper):
+    return {
+        "id": str(paper["_id"]),
+        "title": paper["title"],
+        "url": paper["url"],
+        "metadata": {key: _nicestr(paper[key]) for key in paper["field_order"]},
+    }
+
+
+def review_by_id(request, id=None):
+    context = {
+        "items": [_prep_paper_for_review(models.paper_by_id(id))],
+        "title": f"{base_context['toolname']}: review",
+    }
+    context.update(base_context)
+    return render(request, "review.html", context)

@@ -1,0 +1,80 @@
+{% extends "main.html" %}
+
+{% block head %}
+    <script>
+        $(() => {
+            $('button.editbutton').click(function() {
+                let item = $(this);
+                let id = item.attr('data-id');
+                edit_active_id = id;
+                console.log("id", item);
+                $('#edittitle').val($(`.paperlink[data-id="${id}"]`).text());
+                $('#editurl').val($(`.paperlink[data-id="${id}"]`).attr('href'));
+                $("#editmodal").modal('show');
+            });
+            $('#editmodalsave').click(function() {
+                let title = $('#edittitle').val();
+                let url = $('#editurl').val();
+                let _id = edit_active_id;
+                $('#editmodal').modal('hide');
+                $.post("{{pipelinebase}}/update", {"mode": "updateinfo", "_id": _id, "content": title, "url": url}).fail(function() {document.write('update failed; reload?')}).done(function() {console.log('Successful update status:', _id, title, url);});
+                $(`.paperlink[data-id="${_id}"]`).attr('href', url).text(title);
+            });
+        });
+    </script>
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Review</h1>
+
+            {% for item in items %}
+                <div class="col-sm-12" style="border: 1px solid black; padding: 1em; background-color: white; margin-bottom: 1em" id="box{{item.id}}">
+                    <div class="row">
+                        <div class="col-sm-9 col-md-10">
+                            <a target="_blank" href="{{item.url}}" data-id="{{item.id}}" class="paperlink"><b>{{item.title}}</b></a>&nbsp;&nbsp;&nbsp;<button data-id="{{item.id}}" class="editbutton"><i class="fa fa-pencil" title="edit"></i></button>
+                            <br>
+                            {% for field, value in item.metadata.items %}
+                                <b>{{field}}: </b> {{value}}<br>
+                            {% endfor %}
+                            <textarea style="width:100%; resize:vertical; margin-bottom: 1em" data-id="{{item.id}}" rows="5" placeholder="notes">{{item.notes}}</textarea>
+                        </div>
+                        <div class="col-sm-3 col-md-2 buttonpanel">
+                            <button type="button" data-id="{{item.id}}" data-status="relevant" data-review-status="unreviewed" class="btn btn-success classifier">Relevant</button><br>
+                            <button type="button" data-id="{{item.id}}" data-status="cn-lowpriority" data-review-status="unreviewed" class="btn btn-warning classifier">CN low priority</button><br>
+                            <button type="button" data-id="{{item.id}}" data-status="notrelevant" data-review-status="unreviewed" class="btn btn-danger classifier">Not relevant</button><br>
+                            <button type="button" data-id="{{item.id}}" data-status="discussion" class="btn btn-default classifier">Needs discussion</button><br>
+                            <button type="button" data-id="{{item.id}}" data-status="generalinterest" data-review-status="unreviewed" class="btn btn-info classifier">General Interest</button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div id="editmodal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body" style="width:100%">
+                    <table style="width:100%">
+                        <tr style="width:100%">
+                            <th>Title&nbsp;</th>
+                            <td><input type="text" style="width:100%" id="edittitle"></input></td>
+                        </tr>
+                        <tr>
+                            <th>URL&nbsp;</th>
+                            <td><input type="text" style="width:100%" id="editurl"></input></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="editmodalsave">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -18,32 +18,13 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.17.1/bootstrap-table.min.css" integrity="sha512-zfridm8+ad8KSyxzl1REhqDP5975y8Q0AYaF22bcVGOnaVxlekxODmCGu0TP+Kbk3JbiNK5ENTHs7pT+yf+rBA==" crossorigin="anonymous" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.17.1/bootstrap-table.min.js" integrity="sha512-KtafFo5oE7fpMVyO/gXFnwsAXeGwl8Kxyikp1SCtMc+mXrvzO7WP1Zs70gSNmkcrBd9PS3byB/HFKvAVKtTWdg==" crossorigin="anonymous"></script>
-
-  <style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">  <style>
       .lb-col {
           text-align: center;
           background-color: rgb(246, 248, 248);
       }
       .blue-col {
           background-color: rgb(210, 224, 221);
-      }
-      .btn {
-          background-color: transparent;
-          color: teal;
-          border: transparent;
-      }
-      .btn1 {
-          background-color: transparent;
-          color: rgb(0, 0, 0);
-          border: transparent 0px;
-        }
-      .btn2 {
-          background-color: rgb(199, 213, 214);
-          color: rgb(0, 0, 0);
-          border: rgb(27, 54, 56);
-        }
-      .btn:hover {
-          background-color: transparent;
       }
       .border {
         padding: 10px;
@@ -65,6 +46,9 @@
       }
       .nav-item {
         padding-right: 10px;
+      }
+      .btn {
+        border: 1px solid black;
       }
       .col-md-1 {
           margin-left: 25px;
@@ -106,6 +90,38 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->        
 
+    <script>
+      // CSRF handling from the django docs: 
+      // https://docs.djangoproject.com/en/3.0/ref/csrf/#ajax
+      // accessed 2020-07-02
+      function getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              const cookies = document.cookie.split(';');
+              for (let i = 0; i < cookies.length; i++) {
+                  const cookie = cookies[i].trim();
+                  // Does this cookie string begin with the name we want?
+                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+      const csrftoken = getCookie('csrftoken');
+      function csrfSafeMethod(method) {
+          // these HTTP methods do not require CSRF protection
+          return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+      }
+      $.ajaxSetup({
+          beforeSend: function(xhr, settings) {
+              if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                  xhr.setRequestHeader("X-CSRFToken", csrftoken);
+              }
+          }
+      });    
+    </script>
     {% block head %}
     {% endblock %}
 
@@ -163,12 +179,6 @@
               {% endif %}
             {% endif %}
           </ul>
-          <!--
-          <form class="form-inline navbar-form" action="/search">
-            <input class="form-control" name="q" type="text" placeholder="Search" disabled>
-            <button class="btn btn-success-outline" type="submit" disabled><i class="fa fa-search"></i></button>
-          </form>
-          -->
         </div>
       </nav>
 
@@ -182,6 +192,7 @@
         {% block content %}
         {% endblock %}
     </div>
+  </div>
 
     <!-- Footer -->
 <footer>
@@ -189,8 +200,6 @@
         {{footerhtml}}
     </div>
 </footer>
-
-    </div>
 
 </body>
 </html>
