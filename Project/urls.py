@@ -25,6 +25,7 @@ urlpatterns = [
     re_path("^logout$(?i)", views.my_logout, name="logout"),
     path("browse/<slug:by>/<item>", views.browse, name="browse"),
     path("review_by_id/<slug:id>", views.review_by_id, name="review_by_id"),
+    path("review/<slug:status>", views.review, name="review"),
     path("browse/<slug:by>", views.browse, name="browse"),
     path("browse", views.browse, name="browse"),
 ]

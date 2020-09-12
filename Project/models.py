@@ -57,3 +57,7 @@ def get_papers(fieldname, fieldvalue):
 
 def paper_by_id(paper_id):
     return collection.find_one({"_id": ObjectId(paper_id)})
+
+
+def papers_by_status(status):
+    return collection.find({"status": status})

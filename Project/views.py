@@ -83,6 +83,14 @@ def _nicestr(item):
         return str(item)
 
 
+def _process_paper_browse(paper):
+    result = {field: _nicestr(paper[field]) for field in paper["field_order"]}
+    result["title"] = paper["title"]
+    result["_id"] = str(paper["_id"])
+    result["status"] = paper["status"]
+    return result
+
+
 def browse(request, by=None, item=None):
     if by is None:
         context = {"title": f"{base_context['toolname']}: Browse"}
@@ -105,13 +113,7 @@ def browse(request, by=None, item=None):
     else:
         assert by in models.browse_counts
         all_data = models.get_papers(by, item)
-        data = []
-        for item2 in all_data:
-            result = {field: _nicestr(item2[field]) for field in item2["field_order"]}
-            result["title"] = item2["title"]
-            result["_id"] = str(item2["_id"])
-            result["status"] = item2["status"]
-            data.append(result)
+        data = [_process_paper_browse(paper) for paper in all_data]
         context = {
             "title": f"{base_context['toolname']}: Browse: {by}: {item}",
             "browse_by": by,
@@ -136,6 +138,41 @@ def review_by_id(request, id=None):
     context = {
         "items": [_prep_paper_for_review(models.paper_by_id(id))],
         "title": f"{base_context['toolname']}: review",
+    }
+    context.update(base_context)
+    return render(request, "review.html", context)
+
+
+def _get_subset(iterable, filter_rule, start, num):
+    ignore_count = 0
+    keep_count = 0
+    for item in iterable:
+        if filter_rule(item):
+            if ignore_count < start:
+                ignore_count += 1
+            else:
+                keep_count += 1
+                yield item
+                if keep_count >= num:
+                    break
+
+
+def _filter_papers(request, papers):
+    start = int(request.GET.get("start", 0))
+    num = int(request.GET.get("max", 100))
+    # TODO: this is where we need to make sure the thing hasn't been assigned to someone else recently
+    filter_rule = lambda item: True
+    return list(_get_subset(papers, filter_rule, start, num))
+
+
+def review(request, status=None):
+    context = {
+        "items": [
+            _prep_paper_for_review(paper)
+            for paper in _filter_papers(request, models.papers_by_status(status))
+        ],
+        "title": f"{base_context['toolname']}: review",
+        "status": status,
     }
     context.update(base_context)
     return render(request, "review.html", context)
