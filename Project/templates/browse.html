@@ -1,0 +1,15 @@
+
+{% extends "main.html" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Browse by:</h1>
+            <ul>
+                {% for field in browse_fields %}
+                    <li><a href="{{pipelinebase}}/browse/{{field}}">{{field}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

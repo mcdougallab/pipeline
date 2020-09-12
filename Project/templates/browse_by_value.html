@@ -1,0 +1,49 @@
+{% extends "main.html" %}
+
+{% block head %}
+<script>
+    $(() => {
+        $('#counttable').bootstrapTable({
+            pagination: true,
+            search: true,
+            data: {{countjson | safe}},
+            formatSearch: () => 'filter'
+        });
+    });
+    
+    function name_link(name, row) {
+        return `<a href="{{pipelinebase}}/review_by_id/${row._id}">${name}</a>`
+    }
+</script>
+<style>
+    #counttable > th, td {
+        margin-right: 1em;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Browse by {{browse_by}}: {{browse_by_value}}</h1>
+            <table id="counttable" data-toggle="counttable">
+                <thead>
+                    <tr>
+                        <th data-sortable="true" data-field="title" data-formatter="name_link">
+                            Title
+                        </th>
+                        {% for name in fieldnames %}
+                            <th data-sortable="true" data-field="{{name}}">
+                                {{name}}
+                            </th>
+                        {% endfor %}
+                        <th data-sortable="true" data-field="status">
+                            Status
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+            {{data}}
+        </div>
+    </div>
+{% endblock %}

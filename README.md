@@ -31,6 +31,7 @@ This is setup to run on a bitnami django stack with the repository at ~/apps/dja
   - `pipelinebase` -- optional, but set to e.g. `pipeline` if you want links to go to start with `/pipeline/`
   - `footerhtml` -- optional, but anything you put here will appear in the footer of every page
   - `toolname` -- optional, defaults to "Pipeline"
+  - `browse_fields` -- optional, defaults to all
 - Apply the django migrations
   `python3 manage.py migrate`
 - You will also want to use django admin to create a user with admin permissions from within the
@@ -50,13 +51,13 @@ Every document in the pipeline collection should have the following form:
     {
         "title": "Some title",
         "url": "https://some.url",
-        "fields": [
-            {"name": "Alerts", "value": ["alert1", "alert2"]},
-            {"name": "Snippet", "value": "This is a snippet..."}
+        "field_order": ['fieldname1', 'fieldname2'],
+        "fieldname1": ["alert1", "alert2"],
+        "fieldname2": "This is a snippet..."
         ]
     }
 
-Use a list for values that should appear separately on the statistics report.
+where e.g. fieldname1, fieldname2, ... are arbitrary. Use a list for values that should appear separately on the statistics report.
 
 When the pipeline app starts, any document in the pipeline collection that does not have a `status` attribute will have its `status` attribute set to `"triage"`.
 Likewise, any document that does not have a `notes` attribute will have its `notes` attribute set to the empty string.

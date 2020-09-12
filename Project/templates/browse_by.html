@@ -1,0 +1,44 @@
+{% extends "main.html" %}
+
+{% block head %}
+<script>
+    $(() => {
+        $('#counttable').bootstrapTable({
+            pagination: true,
+            search: true,
+            data: {{countjson | safe}},
+            formatSearch: () => 'filter'
+        });
+    });
+
+    function name_link(name) {
+        let uri = encodeURI(name);
+        return `<a href="{{request.get_full_path | urlencode}}/${uri}">${name}</a>`
+    }
+</script>
+<style>
+    #counttable > th, td {
+        margin-right: 1em;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Browse by {{browse_by}}:</h1>
+            <table id="counttable" data-toggle="counttable">
+                <thead>
+                    <tr>
+                        <th data-sortable="true" data-field="n" data-formatter="name_link">
+                            Value
+                        </th>
+                        <th data-sortable="true" data-field="c">
+                            Number of papers
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+{% endblock %}

@@ -108,6 +108,7 @@ def parse(row):
     result = {
         "title": getattr(row, options["title"]),
         "url": getattr(row, options["url"]),
+        "field_order": list(options["fields"]),
     }
 
     for field in options["fields"]:
@@ -130,3 +131,7 @@ for row in progress_bar(data.itertuples()):
 
 # setup the status indexing
 db.collection.create_index([("status", 1)])
+
+# setup the field indexing
+for field in options["fields"]:
+    db.collection.create_index([(field, 1)])

@@ -151,6 +151,16 @@
                   <a class="dropdown-item" href="{{pipelinebase}}/statistics">Statistics</a>
                 </div>
               </li>
+              {% if browse_fields %}
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-expanded="False">Browse</a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="padding:15px">
+                    {% for field in browse_fields %}
+                      <a class="dropdown-item" href="{{pipelinebase}}/browse/{{field}}">{{field}}</a>
+                    {% endfor %}
+                  </div>
+                </li>
+              {% endif %}
             {% endif %}
           </ul>
           <!--
