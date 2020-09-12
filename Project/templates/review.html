@@ -7,7 +7,6 @@
                 let item = $(this);
                 let id = item.attr('data-id');
                 edit_active_id = id;
-                console.log("id", item);
                 $('#edittitle').val($(`.paperlink[data-id="${id}"]`).text());
                 $('#editurl').val($(`.paperlink[data-id="${id}"]`).attr('href'));
                 $("#editmodal").modal('show');

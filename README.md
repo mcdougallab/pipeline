@@ -2,7 +2,9 @@
 
 ## Overview
 
-This is setup to run on a bitnami django stack with the repository at ~/apps/django/django_projects/Project
+This is a generic tool for triaging documents and assigning metadata.
+
+This is developed and tested on a bitnami django stack.
 
 ## Getting started
 - Download the [bitnami django stack OVA][1]
