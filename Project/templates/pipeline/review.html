@@ -23,6 +23,22 @@
                 .done(function() {console.log('Successful update status:', _id, title, url);});
                 $(`.paperlink[data-id="${_id}"]`).attr('href', url).text(title);
             });
+            $('.classifier').click(function() {
+                let item = $(this);
+                let _id = item.attr('data-id');
+                let queue = item.attr('data-queue');
+                $.post(
+                    `{{pipelinebase}}/update/${_id}`, 
+                    {"status": queue}
+                ).fail(() => {document.write('update failed; reload?')})
+                .done(() => {
+                    $('#revieweditems').prepend(
+                        $(`#box${_id}`).css('background-color', item.css('background-color'))
+                    );
+                    console.log('Successful update status:', _id, status);
+                    $('#reviewedpane').show();
+                });
+            });
         });
     </script>
 {% endblock %}
@@ -30,26 +46,34 @@
     <div class="row">
         <div class="col-md-12">
             <h1>Review{% if status %}: {{status}}{% endif %}</h1>
+            <div id="reviewpane">
+                <h2>To review:</h2>
+                
 
-            {% for item in items %}
-                <div class="col-sm-12" style="border: 1px solid black; padding: 1em; background-color: white; margin-bottom: 1em" id="box{{item.id}}">
-                    <div class="row">
-                        <div class="col-sm-9 col-md-10">
-                            <a target="_blank" href="{{item.url}}" data-id="{{item.id}}" class="paperlink"><b>{{item.title}}</b></a>&nbsp;&nbsp;&nbsp;<button data-id="{{item.id}}" class="editbutton"><i class="fa fa-pencil" title="edit"></i></button>
-                            <br>
-                            {% for field, value in item.metadata.items %}
-                                <b>{{field}}: </b> {{value}}<br>
-                            {% endfor %}
-                            <textarea style="width:100%; resize:vertical; margin-bottom: 1em" data-id="{{item.id}}" rows="5" placeholder="notes">{{item.notes}}</textarea>
-                        </div>
-                        <div class="col-sm-3 col-md-2 buttonpanel">
-                            {% for button in buttons %}
-                                <button type="button" data-id="{{item.id}}" data-status="{{button.queue}}" class="btn btn-default classifier" {% if button.color %}style="background-color: {{button.color}}; color: {% if button.font_color %}{{button.font_color}}{% else %}{% if button.color == "white" %}black{% else %}white{% endif %}{% endif %}"{% endif %}>{{button.name}}</button><br>
-                            {% endfor %}
+                {% for item in items %}
+                    <div class="col-sm-12" style="border: 1px solid black; padding: 1em; background-color: white; margin-bottom: 1em" id="box{{item.id}}">
+                        <div class="row">
+                            <div class="col-sm-9 col-md-10">
+                                <a target="_blank" href="{{item.url}}" data-id="{{item.id}}" class="paperlink"><b>{{item.title}}</b></a>&nbsp;&nbsp;&nbsp;<button data-id="{{item.id}}" class="editbutton"><i class="fa fa-pencil" title="edit"></i></button>
+                                <br>
+                                {% for field, value in item.metadata.items %}
+                                    <b>{{field}}: </b> {{value}}<br>
+                                {% endfor %}
+                                <textarea style="width:100%; resize:vertical; margin-bottom: 1em" data-id="{{item.id}}" rows="5" placeholder="notes">{{item.notes}}</textarea>
+                            </div>
+                            <div class="col-sm-3 col-md-2 buttonpanel">
+                                {% for button in buttons %}
+                                    <button type="button" data-id="{{item.id}}" data-queue="{{button.queue}}" class="btn btn-default classifier" {% if button.color %}style="background-color: {{button.color}}; color: {% if button.font_color %}{{button.font_color}}{% else %}{% if button.color == "white" %}black{% else %}white{% endif %}{% endif %}"{% endif %}>{{button.name}}</button><br>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
+            <div id="reviewedpane" style="display:none">
+                <h2>Reviewed:</h2>
+                <div id="revieweditems"></div>
+            </div>
         </div>
     </div>
     <div id="editmodal" class="modal fade">

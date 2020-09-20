@@ -11,7 +11,9 @@ base_context = {
     "pipelinebase": settings.app_settings.get("pipelinebase", ""),
     "toolname": settings.app_settings.get("toolname", "Pipeline"),
     "browse_fields": settings.app_settings.get("browse_fields"),
+    "buttons": settings.app_settings["pipeline_review_buttons"],
 }
+
 if base_context["browse_fields"] is None:
     base_context["browse_fields"] = list(models.fieldnames)
 
@@ -177,7 +179,6 @@ def review(request, status=None):
             ],
             "title": f"{base_context['toolname']}: review",
             "status": status,
-            "buttons": settings.app_settings["pipeline_review_buttons"]
         }
         context.update(base_context)
         return render(request, "pipeline/review.html", context)
@@ -187,7 +188,12 @@ def review(request, status=None):
 
 def update(request, id=None):
     if permissions.update(request):
-        models.update(id, title=request.POST.get("title"), url=request.POST.get("url"))
+        models.update(
+            id,
+            title=request.POST.get("title"),
+            url=request.POST.get("url"),
+            status=request.POST.get("status"),
+        )
         return HttpResponse("success")
     else:
         return HttpResponse("403 Forbidden", status=403)

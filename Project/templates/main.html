@@ -160,9 +160,9 @@
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-expanded="False">Review</a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="padding:15px">
-                  <a class="dropdown-item" href="{{pipelinebase}}/review/added">Added</a>
-                  <a class="dropdown-item" href="{{pipelinebase}}/review/discussion">For discussion</a>
-                  <a class="dropdown-item" href="{{pipelinebase}}/review/rejected">Rejected</a>
+                  {% for button in buttons %}
+                    <a class="dropdown-item" href="{{pipelinebase}}/review/{{button.queue}}">{{button.name}}</a>
+                  {% endfor %}
                   <hr/>
                   <a class="dropdown-item" href="{{pipelinebase}}/statistics">Statistics</a>
                 </div>

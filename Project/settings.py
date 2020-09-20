@@ -35,7 +35,10 @@ except:
 # auto-suggest appropriate review button font color
 for button in app_settings.get("pipeline_review_buttons", []):
     if "font_color" not in button and "color" in button:
-        if button["color"].startswith("light") or button["color"] in ("yellow", "white"):
+        if button["color"].startswith("light") or button["color"] in (
+            "yellow",
+            "white",
+        ):
             button["font_color"] = "black"
 
 # Quick-start development settings - unsuitable for production

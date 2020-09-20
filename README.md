@@ -36,6 +36,7 @@ This is developed and tested on a bitnami django stack.
   - `browse_fields` -- optional, defaults to all
   - `pipeline_review_buttons` -- list of buttons and their properties for review queues;
     from our experience, we recommend including at least reject, accept, and discussion queues.
+    (This list is also used for the "Review" menu.)
 
     Example:
 
