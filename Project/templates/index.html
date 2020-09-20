@@ -31,9 +31,9 @@
                         Review:
                     </h2>
                     <ul>
-                        <li><a href="{{pipelinebase}}/review/added">Added</a></li>
-                        <li><a href="{{pipelinebase}}/review/discussion">For discussion</a></li>
-                        <li><a href="{{pipelinebase}}/review/rejected">Rejected</a></li>
+                        {% for button in buttons %}
+                            <li><a href="{{pipelinebase}}/review/{{button.queue}}">{{button.name}}</a></li>
+                        {% endfor %}
                     </div>
                     </ul>
                 {% endif %}
