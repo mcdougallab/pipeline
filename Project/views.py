@@ -27,12 +27,12 @@ def my_login(request):
     password = request.POST.get("password")
     if password is not None:
         user = authenticate(username=username, password=password)
-        next_url = request.POST.get("next")
+        next_url = request.POST.get("next", "/")
         if user is not None:
             login(request, user)
-            return redirect(request.POST.get("next"))
+            return redirect(next_url)
     else:
-        next_url = request.GET.get("next")
+        next_url = request.GET.get("next", "/")
     context = {"next": next_url}
     context.update(base_context)
     return render(request, "login.html", context)
@@ -92,37 +92,40 @@ def _process_paper_browse(paper):
 
 
 def browse(request, by=None, item=None):
-    if by is None:
-        context = {"title": f"{base_context['toolname']}: Browse"}
-        context.update(base_context)
-        return render(request, "browse.html", context)
-    elif item is None:
-        assert by in models.browse_counts
-        context = {
-            "title": f"{base_context['toolname']}: Browse: {by}",
-            "browse_by": by,
-            "countjson": json.dumps(
-                [
-                    {"n": key, "c": value}
-                    for key, value in models.browse_counts[by].items()
-                ]
-            ),
-        }
-        context.update(base_context)
-        return render(request, "browse_by.html", context)
+    if permissions.statistics(request):
+        if by is None:
+            context = {"title": f"{base_context['toolname']}: Browse"}
+            context.update(base_context)
+            return render(request, "browse.html", context)
+        elif item is None:
+            assert by in models.browse_counts
+            context = {
+                "title": f"{base_context['toolname']}: Browse: {by}",
+                "browse_by": by,
+                "countjson": json.dumps(
+                    [
+                        {"n": key, "c": value}
+                        for key, value in models.browse_counts[by].items()
+                    ]
+                ),
+            }
+            context.update(base_context)
+            return render(request, "browse_by.html", context)
+        else:
+            assert by in models.browse_counts
+            all_data = models.get_papers(by, item)
+            data = [_process_paper_browse(paper) for paper in all_data]
+            context = {
+                "title": f"{base_context['toolname']}: Browse: {by}: {item}",
+                "browse_by": by,
+                "browse_by_value": item,
+                "fieldnames": settings.app_settings["browse_fields"],
+                "countjson": json.dumps(data),
+            }
+            context.update(base_context)
+            return render(request, "browse_by_value.html", context)
     else:
-        assert by in models.browse_counts
-        all_data = models.get_papers(by, item)
-        data = [_process_paper_browse(paper) for paper in all_data]
-        context = {
-            "title": f"{base_context['toolname']}: Browse: {by}: {item}",
-            "browse_by": by,
-            "browse_by_value": item,
-            "fieldnames": settings.app_settings["browse_fields"],
-            "countjson": json.dumps(data),
-        }
-        context.update(base_context)
-        return render(request, "browse_by_value.html", context)
+        return login_redirect(request)
 
 
 def _prep_paper_for_review(paper):
@@ -166,16 +169,19 @@ def _filter_papers(request, papers):
 
 
 def review(request, status=None):
-    context = {
-        "items": [
-            _prep_paper_for_review(paper)
-            for paper in _filter_papers(request, models.papers_by_status(status))
-        ],
-        "title": f"{base_context['toolname']}: review",
-        "status": status,
-    }
-    context.update(base_context)
-    return render(request, "review.html", context)
+    if permissions.review(request):
+        context = {
+            "items": [
+                _prep_paper_for_review(paper)
+                for paper in _filter_papers(request, models.papers_by_status(status))
+            ],
+            "title": f"{base_context['toolname']}: review",
+            "status": status,
+        }
+        context.update(base_context)
+        return render(request, "review.html", context)
+    else:
+        return login_redirect(request)
 
 
 def update(request, id=None):
