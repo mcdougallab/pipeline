@@ -11,27 +11,37 @@
                 <p>
                     You have access to the following pipeline stages:
                 </p>
-                <h2>
-                    Data Entry:
-                </h2>
-                <ul>
-                    <li>
-                        <a href="{{pipelinebase}}/review/triage">Triage</a>
-                    </li>
-                    <li><a href="{{pipelinebase}}/review/annotate">Annotate</a></li>
-                </ul>
-                <h2>
-                    Review:
-                </h2>
-                <ul>
-                    <li><a href="{{pipelinebase}}/review/added">Added</a></li>
-                    <li><a href="{{pipelinebase}}/review/discussion">For discussion</a></li>
-                    <li><a href="{{pipelinebase}}/review/rejected">Rejected</a></li>
-                  </div>
-                </ul>
-                <h2>
-                    <a href="{{pipelinebase}}/statistics">Statistics</a>
-                </h2>
+                {% if perms.auth.pipeline_review or perms.auth.pipeline_annotate %}
+                    <h2>
+                        Data Entry:
+                    </h2>
+                    <ul>
+                        {% if perms.auth.pipeline_review %}
+                            <li>
+                                <a href="{{pipelinebase}}/review/triage">Triage</a>
+                            </li>
+                        {% endif %}
+                        {% if perms.auth.pipeline_annotate %}
+                            <li><a href="{{pipelinebase}}/annotate">Annotate</a></li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+                {% if perms.auth.pipeline_review %}
+                    <h2>
+                        Review:
+                    </h2>
+                    <ul>
+                        <li><a href="{{pipelinebase}}/review/added">Added</a></li>
+                        <li><a href="{{pipelinebase}}/review/discussion">For discussion</a></li>
+                        <li><a href="{{pipelinebase}}/review/rejected">Rejected</a></li>
+                    </div>
+                    </ul>
+                {% endif %}
+                {% if perms.auth.pipeline_statistics %}
+                    <h2>
+                        <a href="{{pipelinebase}}/statistics">Statistics</a>
+                    </h2>
+                {% endif %}
                 
 
 

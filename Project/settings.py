@@ -76,6 +76,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "Project.pipeline_urls"
 
+
+AUTHENTICATION_BACKENDS = (("django.contrib.auth.backends.ModelBackend"),)
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",

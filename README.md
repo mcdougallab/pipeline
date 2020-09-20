@@ -64,14 +64,27 @@ This is developed and tested on a bitnami django stack.
   `python3 manage.py migrate`
 - You will also want to use django admin to create a user with admin permissions from within the
   shell you get via `python3 manage.py shell`.
-  Example from: https://docs.djangoproject.com/en/3.0/topics/auth/default/#creating-users
+  Example extended from: https://docs.djangoproject.com/en/3.0/topics/auth/default/#creating-users
   ```
   from django.contrib.auth.models import User
   user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
+  user.is_superuser = True
+  user.is_staff = True
+  user.save()
   ```
 - You can run a development server via, e.g. `python3 manage.py runserver 8888`
   - This will make the website available on port 8888 (you can then access it from your host system via port-forwarding.
   - This is separate from apache, which is also running if you're using the bitnami stack and can later be connected to your django system.
+
+## On users and permissions
+
+Assuming you set the `is_superuser` and `is_staff` attributes of your initial user and saved them as above,
+that user will have access to all pages and (because of the `is_staff` attribute) can access the /admin pages as well
+to create new users and to assign specific permissions to groups and to users.
+
+When setting permissions: you'll want to filter for "pipeline". Choices include "auth | user | Can browse pipeline",
+"auth | user | Can do pipeline reviews", and "auth | user | Can see pipeline statistics". These permissions can be
+added to individual users or groups.
 
 ## On data storage
 

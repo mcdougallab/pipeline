@@ -9,6 +9,10 @@
 {% endblock %}
 
 {% block content %}
+    {% if request.user.is_authenticated %}
+        You are logged in as {{ request.user.username }} but you do not have permission to access the requested page;
+        you may login as a different user here.<br><br>
+    {% endif %}
     <form method="post" action="{{pipelinebase}}/login">
         {% csrf_token %} 
         <input name="next" type="hidden" value="{{next}}" />

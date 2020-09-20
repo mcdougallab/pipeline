@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from . import settings
 from . import pipeline_models as models
-from . import pipeline_permissions as permissions
+
 
 base_context = {
     "footerhtml": settings.app_settings.get("footerhtml", ""),
@@ -54,7 +54,7 @@ def login_redirect(request):
 
 
 def statistics(request):
-    if permissions.statistics(request):
+    if request.user.has_perm("auth.pipeline_statistics"):
         statistics = models.statistics()
         print(f"statistics: {statistics}")
         context = {
@@ -94,7 +94,7 @@ def _process_paper_browse(paper):
 
 
 def browse(request, by=None, item=None):
-    if permissions.statistics(request):
+    if request.user.has_perm("auth.pipeline_browse"):
         if by is None:
             context = {"title": f"{base_context['toolname']}: Browse"}
             context.update(base_context)
@@ -141,12 +141,15 @@ def _prep_paper_for_review(paper):
 
 
 def review_by_id(request, id=None):
-    context = {
-        "items": [_prep_paper_for_review(models.paper_by_id(id))],
-        "title": f"{base_context['toolname']}: review",
-    }
-    context.update(base_context)
-    return render(request, "pipeline/review.html", context)
+    if request.user.has_perm("auth.pipeline_review"):
+        context = {
+            "items": [_prep_paper_for_review(models.paper_by_id(id))],
+            "title": f"{base_context['toolname']}: review",
+        }
+        context.update(base_context)
+        return render(request, "pipeline/review.html", context)
+    else:
+        return login_redirect(request)
 
 
 def _get_subset(iterable, filter_rule, start, num):
@@ -172,7 +175,7 @@ def _filter_papers(request, papers):
 
 
 def review(request, status=None):
-    if permissions.review(request):
+    if request.user.has_perm("auth.pipeline_review"):
         context = {
             "items": [
                 _prep_paper_for_review(paper)
@@ -188,13 +191,14 @@ def review(request, status=None):
 
 
 def update(request, id=None):
-    if permissions.update(request):
+    # TODO: as we can expand to more pipeline stages, make sure permissions match fields being updated
+    if request.user.has_perm("auth.pipeline_review"):
         models.update(
             id,
             title=request.POST.get("title"),
             url=request.POST.get("url"),
             status=request.POST.get("status"),
-            notes=request.POST.get("notes")
+            notes=request.POST.get("notes"),
         )
         return HttpResponse("success")
     else:

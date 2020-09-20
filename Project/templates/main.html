@@ -141,7 +141,10 @@
                         {{ request.user.username }}
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="padding:15px">
-                        <a class="dropdown-item" href="{{pipelinebase}}/logout?next={{request.get_full_path | urlencode}}">Logout</a>
+                      {% if request.user.is_staff %}  
+                        <a class="dropdown-item" href="{{pipelinebase}}/admin">Administer users and groups</a>
+                      {% endif %}
+                      <a class="dropdown-item" href="{{pipelinebase}}/logout?next={{request.get_full_path | urlencode}}">Logout</a>
                     </div>
                 </li>
             {% else %}
@@ -150,24 +153,38 @@
                 </li>
             {% endif %}
             {% if request.user.is_authenticated %}
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-expanded="False">Data entry</a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="padding:15px">
-                  <a class="dropdown-item" href="{{pipelinebase}}/review/triage">Triage</a>
-                  <a class="dropdown-item" href="{{pipelinebase}}/review/annotate">Annotate</a>
-                </div>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-expanded="False">Review</a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="padding:15px">
-                  {% for button in buttons %}
-                    <a class="dropdown-item" href="{{pipelinebase}}/review/{{button.queue}}">{{button.name}}</a>
-                  {% endfor %}
-                  <hr/>
-                  <a class="dropdown-item" href="{{pipelinebase}}/statistics">Statistics</a>
-                </div>
-              </li>
-              {% if browse_fields %}
+              {% if perms.auth.pipeline_review or perms.auth.pipeline_annotate %}
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-expanded="False">Data entry</a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="padding:15px">
+                    {% if perms.auth.pipeline_review %}
+                      <a class="dropdown-item" href="{{pipelinebase}}/review/triage">Triage</a>
+                    {% endif %}
+                    {% if perms.auth.pipeline_annotate %}
+                      <a class="dropdown-item" href="{{pipelinebase}}/annotate">Annotate</a>
+                    {% endif %}
+                  </div>
+                </li>
+              {% endif %}
+              {% if perms.auth.pipeline_review or perms.auth.pipeline_statistics %}
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-expanded="False">Review</a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="padding:15px">
+                    {% if perms.auth.pipeline_review %}
+                      {% for button in buttons %}
+                        <a class="dropdown-item" href="{{pipelinebase}}/review/{{button.queue}}">{{button.name}}</a>
+                      {% endfor %}
+                    {% endif %}
+                    {% if perms.auth.pipeline_statistics and perms.auth.pipeline_review %}
+                      <hr/>
+                    {% endif %}
+                    {% if perms.auth.pipeline_statistics %}
+                      <a class="dropdown-item" href="{{pipelinebase}}/statistics">Statistics</a>
+                    {% endif %}
+                  </div>
+                </li>
+              {% endif %}
+              {% if browse_fields and perms.auth.pipeline_browse %}
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-expanded="False">Browse</a>
                   <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="padding:15px">

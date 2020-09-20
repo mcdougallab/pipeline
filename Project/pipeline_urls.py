@@ -15,15 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.views.debug import default_urlconf
+from django.contrib.auth import views as auth_views
 from django.urls import path, re_path
 from . import pipeline_views
 from .settings import pipelinebase
 
 
 def prebase(url):
-    if pipelinebase:
-        return "%s/%s" % (pipelinebase, url)
-    return url
+    return f"{pipelinebase}/{url}" if pipelinebase else url
 
 
 urlpatterns = [
@@ -43,4 +42,5 @@ urlpatterns = [
     path(prebase("browse/<slug:by>"), pipeline_views.browse, name="browse"),
     path(prebase("browse"), pipeline_views.browse, name="browse"),
     path(prebase("update/<slug:id>"), pipeline_views.update, name="update"),
+    path(prebase("admin/"), admin.site.urls),
 ]
