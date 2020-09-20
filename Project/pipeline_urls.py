@@ -16,17 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.views.debug import default_urlconf
 from django.urls import path, re_path
-from . import views
+from . import pipeline_views
 
 urlpatterns = [
-    path("", views.index, name="index"),
-    re_path("^statistics$(?i)", views.statistics, name="statistics"),
-    re_path("^login$(?i)", views.my_login, name="login"),
-    re_path("^logout$(?i)", views.my_logout, name="logout"),
-    path("browse/<slug:by>/<item>", views.browse, name="browse"),
-    path("review_by_id/<slug:id>", views.review_by_id, name="review_by_id"),
-    path("review/<slug:status>", views.review, name="review"),
-    path("browse/<slug:by>", views.browse, name="browse"),
-    path("browse", views.browse, name="browse"),
-    path("update/<slug:id>", views.update, name="update"),
+    path("", pipeline_views.index, name="index"),
+    re_path("^statistics$(?i)", pipeline_views.statistics, name="statistics"),
+    re_path("^login$(?i)", pipeline_views.my_login, name="login"),
+    re_path("^logout$(?i)", pipeline_views.my_logout, name="logout"),
+    path("browse/<slug:by>/<item>", pipeline_views.browse, name="browse"),
+    path("review_by_id/<slug:id>", pipeline_views.review_by_id, name="review_by_id"),
+    path("review/<slug:status>", pipeline_views.review, name="review"),
+    path("browse/<slug:by>", pipeline_views.browse, name="browse"),
+    path("browse", pipeline_views.browse, name="browse"),
+    path("update/<slug:id>", pipeline_views.update, name="update"),
 ]

@@ -3,8 +3,8 @@ from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from . import settings
-from . import models
-from . import permissions
+from . import pipeline_models as models
+from . import pipeline_permissions as permissions
 
 base_context = {
     "footerhtml": settings.app_settings.get("footerhtml", ""),
@@ -68,7 +68,7 @@ def statistics(request):
             "title": f"{base_context['toolname']}: statistics",
         }
         context.update(base_context)
-        return render(request, "statistics.html", context)
+        return render(request, "pipeline/statistics.html", context)
     else:
         return login_redirect(request)
 
@@ -96,7 +96,7 @@ def browse(request, by=None, item=None):
         if by is None:
             context = {"title": f"{base_context['toolname']}: Browse"}
             context.update(base_context)
-            return render(request, "browse.html", context)
+            return render(request, "pipeline/browse.html", context)
         elif item is None:
             assert by in models.browse_counts
             context = {
@@ -110,7 +110,7 @@ def browse(request, by=None, item=None):
                 ),
             }
             context.update(base_context)
-            return render(request, "browse_by.html", context)
+            return render(request, "pipeline/browse_by.html", context)
         else:
             assert by in models.browse_counts
             all_data = models.get_papers(by, item)
@@ -123,7 +123,7 @@ def browse(request, by=None, item=None):
                 "countjson": json.dumps(data),
             }
             context.update(base_context)
-            return render(request, "browse_by_value.html", context)
+            return render(request, "pipeline/browse_by_value.html", context)
     else:
         return login_redirect(request)
 
@@ -143,7 +143,7 @@ def review_by_id(request, id=None):
         "title": f"{base_context['toolname']}: review",
     }
     context.update(base_context)
-    return render(request, "review.html", context)
+    return render(request, "pipeline/review.html", context)
 
 
 def _get_subset(iterable, filter_rule, start, num):
@@ -179,7 +179,7 @@ def review(request, status=None):
             "status": status,
         }
         context.update(base_context)
-        return render(request, "review.html", context)
+        return render(request, "pipeline/review.html", context)
     else:
         return login_redirect(request)
 
