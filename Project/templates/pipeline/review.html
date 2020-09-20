@@ -39,6 +39,16 @@
                     $('#reviewedpane').show();
                 });
             });
+            $('.notesfield').focusout(function() {
+                let item = $(this);
+                let _id = item.attr('data-id');
+                let content = item.val();
+                $.post(
+                    `{{pipelinebase}}/update/${_id}`, 
+                    {"notes": content}
+                ).fail(() => {document.write('update failed; reload?')})
+                .done(function() {console.log('Successful update notes:', _id, content);});
+            });
         });
     </script>
 {% endblock %}
@@ -59,7 +69,7 @@
                                 {% for field, value in item.metadata.items %}
                                     <b>{{field}}: </b> {{value}}<br>
                                 {% endfor %}
-                                <textarea style="width:100%; resize:vertical; margin-bottom: 1em" data-id="{{item.id}}" rows="5" placeholder="notes">{{item.notes}}</textarea>
+                                <textarea class="notesfield" style="width:100%; resize:vertical; margin-bottom: 1em" data-id="{{item.id}}" rows="5" placeholder="notes">{{item.notes}}</textarea>
                             </div>
                             <div class="col-sm-3 col-md-2 buttonpanel">
                                 {% for button in buttons %}

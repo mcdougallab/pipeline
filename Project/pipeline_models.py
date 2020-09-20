@@ -65,8 +65,5 @@ def papers_by_status(status):
 
 def update(paper_id, **kwargs):
     new_values = {item: value for item, value in kwargs.items() if value is not None}
-    collection.update_many({"_id": ObjectId(paper_id)}, {"$set": new_values})
-    import pprint
-
-    pprint.pprint(collection.find_one({"_id": ObjectId(paper_id)}))
-    pprint.pprint(new_values)
+    if new_values:
+        collection.update_many({"_id": ObjectId(paper_id)}, {"$set": new_values})

@@ -135,6 +135,7 @@ def _prep_paper_for_review(paper):
         "id": str(paper["_id"]),
         "title": paper["title"],
         "url": paper["url"],
+        "notes": paper.get("notes", ""),
         "metadata": {key: _nicestr(paper[key]) for key in paper["field_order"]},
     }
 
@@ -193,6 +194,7 @@ def update(request, id=None):
             title=request.POST.get("title"),
             url=request.POST.get("url"),
             status=request.POST.get("status"),
+            notes=request.POST.get("notes")
         )
         return HttpResponse("success")
     else:
