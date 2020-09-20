@@ -141,7 +141,8 @@
                         {{ request.user.username }}
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="padding:15px">
-                      {% if request.user.is_staff %}  
+                      <a class="dropdown-item" href="{{pipelinebase}}/change-password?next={{request.get_full_path | urlencode}}">Change password</a>
+                      {% if request.user.is_staff %}
                         <a class="dropdown-item" href="{{pipelinebase}}/admin">Administer users and groups</a>
                       {% endif %}
                       <a class="dropdown-item" href="{{pipelinebase}}/logout?next={{request.get_full_path | urlencode}}">Logout</a>

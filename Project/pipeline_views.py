@@ -1,7 +1,8 @@
 import json
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 from . import settings
 from . import pipeline_models as models
 
@@ -203,3 +204,24 @@ def update(request, id=None):
         return HttpResponse("success")
     else:
         return HttpResponse("403 Forbidden", status=403)
+
+
+def change_password(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            form = PasswordChangeForm(request.user, request.POST)
+            if form.is_valid():
+                user = form.save()
+                update_session_auth_hash(request, user)
+                next_url = request.POST.get("next", base_context["pipelinebase"])
+                if not next_url:
+                    next_url = "/"
+                return redirect(next_url)
+        else:
+            form = PasswordChangeForm(request.user)
+        context = dict(base_context)
+        context["form"] = form
+        context["next"] = request.GET.get("next")
+        return render(request, "pipeline/change_password.html", context)
+    else:
+        return login_redirect(request)

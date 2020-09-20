@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.views.debug import default_urlconf
-from django.contrib.auth import views as auth_views
+from django.contrib.auth import views
 from django.urls import path, re_path
 from . import pipeline_views
 from .settings import pipelinebase
@@ -43,4 +43,5 @@ urlpatterns = [
     path(prebase("browse"), pipeline_views.browse, name="browse"),
     path(prebase("update/<slug:id>"), pipeline_views.update, name="update"),
     path(prebase("admin/"), admin.site.urls),
+    path(prebase("change-password"), pipeline_views.change_password),
 ]
