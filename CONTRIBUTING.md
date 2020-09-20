@@ -63,6 +63,7 @@ corresponding issue with the core developers prior to submitting a pull request.
 
 ## Miscellaneous notes
 - Code that modifies the database will be more heavily reviewed than code that just reads the database. In particular, make sure the database can only be modified by a logged-in user with the appropriate permissions.
+- Try to avoid merges; put your code at the top of the development tree.
 
 ## Finally
 
