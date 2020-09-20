@@ -34,7 +34,31 @@ This is developed and tested on a bitnami django stack.
   - `footerhtml` -- optional, but anything you put here will appear in the footer of every page
   - `toolname` -- optional, defaults to "Pipeline"
   - `browse_fields` -- optional, defaults to all
-- Change the default database in the `Project/settings.py` to one you install with bitnami.
+- Change the default database in the `Project/settings.py` to one you installed with bitnami.
+  - `pipeline_review_buttons` -- list of buttons and their properties for review queues;
+    from our experience, we recommend including at least reject, accept, and discussion queues.
+
+    Example:
+
+        "pipeline_review_buttons": [
+          {
+              "name": "Relevant",
+              "queue": "relevant",
+              "color": "green"
+          },
+          {
+              "name": "Low priority",
+              "queue": "low-priority",
+              "color": "yellow",
+              "font_color": "black"
+          },
+          {
+              "name": "Not relevant",
+              "queue": "not-relevant",
+              "color": "red"
+          }
+        ]
+
 - Apply the django migrations
   `python3 manage.py migrate`
 - You will also want to use django admin to create a user with admin permissions from within the

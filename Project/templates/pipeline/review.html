@@ -43,11 +43,9 @@
                             <textarea style="width:100%; resize:vertical; margin-bottom: 1em" data-id="{{item.id}}" rows="5" placeholder="notes">{{item.notes}}</textarea>
                         </div>
                         <div class="col-sm-3 col-md-2 buttonpanel">
-                            <button type="button" data-id="{{item.id}}" data-status="relevant" data-review-status="unreviewed" class="btn btn-success classifier">Relevant</button><br>
-                            <button type="button" data-id="{{item.id}}" data-status="cn-lowpriority" data-review-status="unreviewed" class="btn btn-warning classifier">CN low priority</button><br>
-                            <button type="button" data-id="{{item.id}}" data-status="notrelevant" data-review-status="unreviewed" class="btn btn-danger classifier">Not relevant</button><br>
-                            <button type="button" data-id="{{item.id}}" data-status="discussion" class="btn btn-default classifier">Needs discussion</button><br>
-                            <button type="button" data-id="{{item.id}}" data-status="generalinterest" data-review-status="unreviewed" class="btn btn-info classifier">General Interest</button>
+                            {% for button in buttons %}
+                                <button type="button" data-id="{{item.id}}" data-status="{{button.queue}}" class="btn btn-default classifier" {% if button.color %}style="background-color: {{button.color}}; color: {% if button.font_color %}{{button.font_color}}{% else %}{% if button.color == "white" %}black{% else %}white{% endif %}{% endif %}"{% endif %}>{{button.name}}</button><br>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>

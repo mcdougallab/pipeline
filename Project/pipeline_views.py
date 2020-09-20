@@ -177,6 +177,7 @@ def review(request, status=None):
             ],
             "title": f"{base_context['toolname']}: review",
             "status": status,
+            "buttons": settings.app_settings["pipeline_review_buttons"]
         }
         context.update(base_context)
         return render(request, "pipeline/review.html", context)
