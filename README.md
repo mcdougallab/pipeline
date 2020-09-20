@@ -34,6 +34,7 @@ This is developed and tested on a bitnami django stack.
   - `footerhtml` -- optional, but anything you put here will appear in the footer of every page
   - `toolname` -- optional, defaults to "Pipeline"
   - `browse_fields` -- optional, defaults to all
+- Change the default database in the `Project/settings.py` to one you install with bitnami.
 - Apply the django migrations
   `python3 manage.py migrate`
 - You will also want to use django admin to create a user with admin permissions from within the
@@ -41,7 +42,8 @@ This is developed and tested on a bitnami django stack.
   Example from: https://docs.djangoproject.com/en/3.0/topics/auth/default/#creating-users
   ```
   from django.contrib.auth.models import User
-  user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')```
+  user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
+  ```
 - You can run a development server via, e.g. `python3 manage.py runserver 8888`
   - This will make the website available on port 8888 (you can then access it from your host system via port-forwarding.
   - This is separate from apache, which is also running if you're using the bitnami stack and can later be connected to your django system.
