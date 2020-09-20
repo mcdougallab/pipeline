@@ -17,16 +17,30 @@ from django.contrib import admin
 from django.views.debug import default_urlconf
 from django.urls import path, re_path
 from . import pipeline_views
+from .settings import pipelinebase
+
+
+def prebase(url):
+    if pipelinebase:
+        return "%s/%s" % (pipelinebase, url)
+    return url
+
 
 urlpatterns = [
-    path("", pipeline_views.index, name="index"),
-    re_path("^statistics$(?i)", pipeline_views.statistics, name="statistics"),
-    re_path("^login$(?i)", pipeline_views.my_login, name="login"),
-    re_path("^logout$(?i)", pipeline_views.my_logout, name="logout"),
-    path("browse/<slug:by>/<item>", pipeline_views.browse, name="browse"),
-    path("review_by_id/<slug:id>", pipeline_views.review_by_id, name="review_by_id"),
-    path("review/<slug:status>", pipeline_views.review, name="review"),
-    path("browse/<slug:by>", pipeline_views.browse, name="browse"),
-    path("browse", pipeline_views.browse, name="browse"),
-    path("update/<slug:id>", pipeline_views.update, name="update"),
+    path(prebase(""), pipeline_views.index, name="index"),
+    re_path(
+        "^" + prebase("statistics$(?i)"), pipeline_views.statistics, name="statistics"
+    ),
+    re_path("^" + prebase("login$(?i)"), pipeline_views.my_login, name="login"),
+    re_path("^" + prebase("logout$(?i)"), pipeline_views.my_logout, name="logout"),
+    path(prebase("browse/<slug:by>/<item>"), pipeline_views.browse, name="browse"),
+    path(
+        prebase("review_by_id/<slug:id>"),
+        pipeline_views.review_by_id,
+        name="review_by_id",
+    ),
+    path(prebase("review/<slug:status>"), pipeline_views.review, name="review"),
+    path(prebase("browse/<slug:by>"), pipeline_views.browse, name="browse"),
+    path(prebase("browse"), pipeline_views.browse, name="browse"),
+    path(prebase("update/<slug:id>"), pipeline_views.update, name="update"),
 ]
