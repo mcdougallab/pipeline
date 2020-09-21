@@ -13,7 +13,19 @@ base_context = {
     "toolname": settings.app_settings.get("toolname", "Pipeline"),
     "browse_fields": settings.app_settings.get("browse_fields"),
     "buttons": settings.app_settings["pipeline_review_buttons"],
+    "annotation": settings.app_settings.get("pipeline_annotation"),
 }
+
+try:
+    with open(
+        settings.app_settings["pipeline_annotation"][
+            "pipeline_metadata_autocomplete_file"
+        ]
+    ) as f:
+        metadata_autcomplete_tags = json.load(f)
+except:
+    metadata_autcomplete_tags = {}
+
 
 if base_context["browse_fields"] is None:
     base_context["browse_fields"] = list(models.fieldnames)
@@ -23,6 +35,22 @@ def index(request):
     context = {"title": base_context["toolname"]}
     context.update(base_context)
     return render(request, "index.html", context)
+
+
+def annotate(request):
+    if request.user.has_perm("auth.pipeline_annotate"):
+        queue = base_context["annotation"]["queue_in"]
+        context = {
+            "items": [
+                _prep_paper_for_review(paper)
+                for paper in _filter_papers(request, models.papers_by_status(queue))
+            ],
+            "title": f"{base_context['toolname']}: annotate",
+        }
+        context.update(base_context)
+        return render(request, "pipeline/annotate.html", context)
+    else:
+        return login_redirect(request)
 
 
 def my_login(request):

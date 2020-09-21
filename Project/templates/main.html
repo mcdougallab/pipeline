@@ -161,7 +161,7 @@
                     {% if perms.auth.pipeline_review %}
                       <a class="dropdown-item" href="{{pipelinebase}}/review/triage">Triage</a>
                     {% endif %}
-                    {% if perms.auth.pipeline_annotate %}
+                    {% if perms.auth.pipeline_annotate and annotation %}
                       <a class="dropdown-item" href="{{pipelinebase}}/annotate">Annotate</a>
                     {% endif %}
                   </div>

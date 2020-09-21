@@ -21,7 +21,7 @@
                                 <a href="{{pipelinebase}}/review/triage">Triage</a>
                             </li>
                         {% endif %}
-                        {% if perms.auth.pipeline_annotate %}
+                        {% if perms.auth.pipeline_annotate and annotation %}
                             <li><a href="{{pipelinebase}}/annotate">Annotate</a></li>
                         {% endif %}
                     </ul>

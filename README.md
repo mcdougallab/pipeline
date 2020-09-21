@@ -34,7 +34,6 @@ This is developed and tested on a bitnami django stack.
   - `footerhtml` -- optional, but anything you put here will appear in the footer of every page
   - `toolname` -- optional, defaults to "Pipeline"
   - `browse_fields` -- optional, defaults to all
-- Change the default database in the `Project/settings.py` to one you installed with bitnami.
   - `pipeline_review_buttons` -- list of buttons and their properties for review queues;
     from our experience, we recommend including at least reject, accept, and discussion queues.
     (This list is also used for the "Review" menu.)
@@ -59,7 +58,34 @@ This is developed and tested on a bitnami django stack.
               "color": "red"
           }
         ]
+-  `pipeline_annotation` (optional, but required for annotation phase of the pipeline); should be in this general format, where the
+   `pipeline_metadata_tags_autocomplete_file` is a JSON file representation of a dictionary whose keys are names and the values are
+   tag ids. If not specified, the metadata tags during the annotate phase are unrestricted.
 
+     "pipeline_annotation": {
+        "title": "Annotate",
+        "queue_in": "relevant",
+        "next_button": {
+            "queue": "prepare_submission",
+            "name": "Next"
+        },
+        "fields": [
+            {
+                "name": "Your Excerpt",
+                "short_name": "excerpt",
+                "placeholder": "Put an excerpt describing your conclusions",
+                "type": "text"
+            },
+            {
+                "name": "Confidence",
+                "short_name": "confidence",
+                "placeholder": "How confident are you about your conclusions?",
+                "type": "text"
+            }
+        ],
+        "pipeline_metadata_tags_autocomplete_file": "/home/bitnami/metadata_autocomplete.json"
+    }
+- Change the default database in the `Project/settings.py` to one you installed with bitnami.
 - Apply the django migrations
   `python3 manage.py migrate`
 - You will also want to use django admin to create a user with admin permissions from within the

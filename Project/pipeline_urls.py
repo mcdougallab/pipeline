@@ -18,7 +18,7 @@ from django.views.debug import default_urlconf
 from django.contrib.auth import views
 from django.urls import path, re_path
 from . import pipeline_views
-from .settings import pipelinebase
+from .settings import pipelinebase, app_settings
 
 
 def prebase(url):
@@ -45,3 +45,8 @@ urlpatterns = [
     path(prebase("admin/"), admin.site.urls),
     path(prebase("change-password"), pipeline_views.change_password),
 ]
+
+if "pipeline_annotation" in app_settings:
+    urlpatterns.append(
+        path(prebase("annotate"), pipeline_views.annotate, name="annotate")
+    )

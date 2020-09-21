@@ -1,0 +1,141 @@
+{% extends "main.html" %}
+
+{% block head %}
+    <script>
+        $(() => {
+            $('button.editbutton').click(function() {
+                let item = $(this);
+                let id = item.attr('data-id');
+                edit_active_id = id;
+                $('#edittitle').val($(`.paperlink[data-id="${id}"]`).text());
+                $('#editurl').val($(`.paperlink[data-id="${id}"]`).attr('href'));
+                $("#editmodal").modal('show');
+            });
+            $('#editmodalsave').click(function() {
+                let title = $('#edittitle').val();
+                let url = $('#editurl').val();
+                let _id = edit_active_id;
+                $('#editmodal').modal('hide');
+                $.post(
+                    `{{pipelinebase}}/update/${_id}`, 
+                    {"title": title, "url": url}
+                ).fail(() => {document.write('update failed; reload?')})
+                .done(function() {console.log('Successful update status:', _id, title, url);});
+                $(`.paperlink[data-id="${_id}"]`).attr('href', url).text(title);
+            });
+            $('.classifier').click(function() {
+                let item = $(this);
+                let _id = item.attr('data-id');
+                let queue = item.attr('data-queue');
+                $.post(
+                    `{{pipelinebase}}/update/${_id}`, 
+                    {"status": queue}
+                ).fail(() => {document.write('update failed; reload?')})
+                .done(() => {
+                    $('#revieweditems').prepend(
+                        $(`#box${_id}`).css('background-color', item.css('background-color'))
+                    );
+                    console.log('Successful update status:', _id, status);
+                    $('#reviewedpane').show();
+                });
+            });
+            $('.notesfield').focusout(function() {
+                let item = $(this);
+                let _id = item.attr('data-id');
+                let content = item.val();
+                $.post(
+                    `{{pipelinebase}}/update/${_id}`, 
+                    {"notes": content}
+                ).fail(() => {document.write('update failed; reload?')})
+                .done(function() {console.log('Successful update notes:', _id, content);});
+            });
+        });
+    </script>
+    <style>
+        .classifier {
+            margin-left: 1em;
+            margin-right: 1em;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1>{{annotation.title}}</h1>
+            <div id="reviewpane">
+                <h2>To annotate:</h2>
+                {% for item in items %}
+                    <div class="col-sm-12" style="border: 1px solid black; padding: 1em; background-color: white; margin-bottom: 1em" id="box{{item.id}}">
+                        <div class="row">
+                            <div class="col-sm-8 col-md-9">
+                                <a target="_blank" href="{{item.url}}" data-id="{{item.id}}" class="paperlink"><b>{{item.title}}</b></a>&nbsp;&nbsp;&nbsp;<button data-id="{{item.id}}" class="editbutton"><i class="fa fa-pencil" title="edit"></i></button>
+                                <br>
+                                {% for field, value in item.metadata.items %}
+                                    <b>{{field}}: </b> {{value}}<br>
+                                {% endfor %}
+                                <textarea class="notesfield" style="width:100%; resize:vertical; margin-bottom: 1em" data-id="{{item.id}}" rows="5" placeholder="notes">{{item.notes}}</textarea>
+                                <br>
+                                <table style="width:100%">
+                                    {% for field in annotation.fields %}
+                                        <tr style="width: 100%">
+                                            <td><b>{{field.name}}: </b></td>
+                                            <td>
+                                                {% if field.type == "text" %}
+                                                    <input type="text" style="width: 100%" data-id="{{item.id}}" data-field="{{field.short_name}}" {% if field.placeholder %}placeholder="{{field.placeholder}}"{% endif %}>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                            <div class="col-sm-4 col-md-3 buttonpanel">
+                                <div><b>Metadata tags:</b></div>
+                                <input type="text" style="width:100%" placeholder="Enter tags">
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <button type="button" data-id="{{item.id}}" data-queue="{{annotation.next_button.queue}}" class="btn btn-default classifier" {% if annotation.next_button.color %}style="background-color: {{annotation.next_button.color}}; color: {% if annotation.next_button.font_color %}{{annotation.next_button.font_color}}{% else %}{% if annotation.next_button.color == "white" %}black{% else %}white{% endif %}{% endif %}"{% endif %}>{{annotation.next_button.name}}</button>&nbsp; &nbsp;
+                            {% for button in buttons %}
+                                {% if button.queue != annotation.queue_in %}
+                                    <button type="button" data-id="{{item.id}}" data-queue="{{button.queue}}" class="btn btn-default classifier" {% if button.color %}style="background-color: {{button.color}}; color: {% if button.font_color %}{{button.font_color}}{% else %}{% if button.color == "white" %}black{% else %}white{% endif %}{% endif %}"{% endif %}>{{button.name}}</button><br>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+            
+                    </div>
+                {% endfor %}
+            </div>
+            <div id="reviewedpane" style="display:none">
+                <h2>Annotated:</h2>
+                <div id="revieweditems"></div>
+            </div>
+        </div>
+    </div>
+    <div id="editmodal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body" style="width:100%">
+                    <table style="width:100%">
+                        <tr style="width:100%">
+                            <th>Title&nbsp;</th>
+                            <td><input type="text" style="width:100%" id="edittitle"></input></td>
+                        </tr>
+                        <tr>
+                            <th>URL&nbsp;</th>
+                            <td><input type="text" style="width:100%" id="editurl"></input></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="editmodalsave">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
