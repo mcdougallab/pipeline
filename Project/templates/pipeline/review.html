@@ -1,5 +1,5 @@
 {% extends "main.html" %}
-
+{% load util %}
 {% block head %}
     <script>
         $(() => {
@@ -58,8 +58,6 @@
             <h1>Review{% if status %}: {{status}}{% endif %}</h1>
             <div id="reviewpane">
                 <h2>To review:</h2>
-                
-
                 {% for item in items %}
                     <div class="col-sm-12" style="border: 1px solid black; padding: 1em; background-color: white; margin-bottom: 1em" id="box{{item.id}}">
                         <div class="row">
@@ -67,13 +65,26 @@
                                 <a target="_blank" href="{{item.url}}" data-id="{{item.id}}" class="paperlink"><b>{{item.title}}</b></a>&nbsp;&nbsp;&nbsp;<button data-id="{{item.id}}" class="editbutton"><i class="fa fa-pencil" title="edit"></i></button>
                                 <br>
                                 {% for field, value in item.metadata.items %}
-                                    <b>{{field}}: </b> {{value}}<br>
-                                {% endfor %}
-                                <textarea class="notesfield" style="width:100%; resize:vertical; margin-bottom: 1em" data-id="{{item.id}}" rows="5" placeholder="notes">{{item.notes}}</textarea>
-                            </div>
-                            <div class="col-sm-3 col-md-2 buttonpanel">
-                                {% for button in buttons %}
-                                    <button type="button" data-id="{{item.id}}" data-queue="{{button.queue}}" class="btn btn-default classifier" {% if button.color %}style="background-color: {{button.color}}; color: {% if button.font_color %}{{button.font_color}}{% else %}{% if button.color == "white" %}black{% else %}white{% endif %}{% endif %}"{% endif %}>{{button.name}}</button><br>
+                                    {% if value|get_type == 'str' %}
+                                        <b>{{field}}: </b> {{value}} 
+                                    {% elif value|get_type == 'list' and value %}
+                                        <b>{{field}}: </b> 
+                                        <ul>
+                                            {% for ref in value %}
+                                                {% if ref %}
+                                                    <li>
+                                                        {% if field == 'figures' %}
+                                                            <a target="_blank" href="{{item.url}}figure/F{{forloop.counter}}" data-id="{{item.id}}" class="figurelink", onmouseover='document.getElementById("{{item.id}}F{{forloop.counter}}").src = {{item.url}}figure/F{{forloop.counter}}'> {{ ref|get_label }}</a>
+                                                        {% else %}
+                                                            <a target="_blank" href="{{item.url}}table/T{{forloop.counter}}" data-id="{{item.id}}" class="paperlink"> {{ ref|get_label }}</a>
+                                                        {% endif %}
+                                                        {{ref|get_sentence}}
+                                                    </li>
+                                               {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                    <br/>
                                 {% endfor %}
                             </div>
                         </div>

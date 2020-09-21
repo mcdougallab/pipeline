@@ -1,11 +1,11 @@
 import json
+import datetime
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from . import settings
 from . import pipeline_models as models
-
 
 base_context = {
     "footerhtml": settings.app_settings.get("footerhtml", ""),
@@ -110,12 +110,23 @@ def _nicestr(item):
         if any("," in thing for thing in item):
             joiner = "; "
         return joiner.join(thing for thing in item)
+    elif isinstance(item, datetime.datetime):
+        return str(item.date())
     else:
         return str(item)
 
 
+def _format_field(paper, field):
+    if "type" in field and field["type"] == "list":
+        return paper[field["name"]]
+    else:
+        return _nicestr(paper[field["name"]])
+
+
 def _process_paper_browse(paper):
-    result = {field: _nicestr(paper[field]) for field in paper["field_order"]}
+    result = {
+        field["name"]: _format_field(paper, field) for field in paper["field_order"]
+    }
     result["title"] = paper["title"]
     result["_id"] = str(paper["_id"])
     result["status"] = paper["status"]
@@ -165,7 +176,9 @@ def _prep_paper_for_review(paper):
         "title": paper["title"],
         "url": paper["url"],
         "notes": paper.get("notes", ""),
-        "metadata": {key: _nicestr(paper[key]) for key in paper["field_order"]},
+        "metadata": {
+            field["name"]: _format_field(paper, field) for field in paper["field_order"]
+        },
     }
 
 
