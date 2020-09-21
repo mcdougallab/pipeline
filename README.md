@@ -88,6 +88,7 @@ This is developed and tested on a bitnami django stack.
 - Change the default postgres database in the `Project/settings.py` to one you installed with bitnami.
 - Apply the django migrations
   `python3 manage.py migrate`
+- Run `python3 setup/permissions.py` script to declare the possible pipeline permissions.
 - You will also want to use django admin to create a user with admin permissions from within the
   shell you get via `python3 manage.py shell`.
   Example extended from: https://docs.djangoproject.com/en/3.0/topics/auth/default/#creating-users
