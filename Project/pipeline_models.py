@@ -12,9 +12,6 @@ db.authenticate(
 collection = getattr(db, settings.app_settings["collection_name"])
 
 
-
-
-
 fieldnames = set()
 for item in collection.find():
     fieldnames = fieldnames.union(item["field_order"])

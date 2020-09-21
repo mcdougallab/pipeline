@@ -1,6 +1,8 @@
 {% extends "main.html" %}
 
 {% block head %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
     <script>
         $(() => {
             $('button.editbutton').click(function() {
@@ -52,6 +54,19 @@
                 let content = item.val();
                 _do_update(_id, name, content);
             });
+            $('.metadata-tags').select2({
+                placeholder: "Enter metadata tags",
+                tags: true
+            });
+            $('.metadata-tags').change(function() {
+                let item = $(this);
+                let _id = item.attr('data-id');
+                let selected = [];
+                for (let my_item of item.children('option:selected')) {
+                    selected.push(my_item.value);
+                }
+                _do_update(_id, "annotation.metadata_tags", JSON.stringify(selected));
+            });
         });
         function _do_update(_id, name, content) {
             $.post(
@@ -65,6 +80,12 @@
         .classifier {
             margin-left: 1em;
             margin-right: 1em;
+        }
+        .metadata-tags {
+            width: 100%;
+        }
+        .select2 li {
+            display: block !important;
         }
     </style>
 {% endblock %}
@@ -100,7 +121,8 @@
                             </div>
                             <div class="col-sm-4 col-md-3 buttonpanel">
                                 <div><b>Metadata tags:</b></div>
-                                <input type="text" style="width:100%" placeholder="Enter tags">
+                                <select class="metadata-tags" data-id="{{item.id}}" multiple="multiple">
+                                </select>
                             </div>
                         </div>
                         <br>

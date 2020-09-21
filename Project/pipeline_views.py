@@ -248,7 +248,8 @@ def update(request, id=None):
             elif (
                 key == "annotation.metadata_tags" or key.startswith("annotation.field.")
             ) and request.user.has_perm("auth.pipeline_annotate"):
-                pass
+                if key == "annotation.metadata_tags":
+                    value = json.loads(value)
             else:
                 return HttpResponse("403 Forbidden", status=403)
             changes[key] = value
