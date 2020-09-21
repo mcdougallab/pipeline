@@ -4,6 +4,12 @@ import pandas as pd
 import pprint
 from pymongo import MongoClient, ReturnDocument
 import sys
+import os
+import json
+import re
+
+
+CORD19 = "/home/adam/CORD-19"  # path to the CORD-19 dataset
 
 try:
     import tqdm
@@ -58,7 +64,7 @@ def tags(row):
 
 
 options = {
-    "csvfile": "/home/bitnami/2020-09-08/metadata.csv",
+    "csvfile": os.path.join(CORD19, "metadata.csv"),
     "keep_rule": lambda row: row.license
     in [
         "green-oa",
@@ -72,9 +78,12 @@ options = {
     ],
     "title": "title",
     "url": "url",
-    "fields": ["authors", "journal", "tags", "license", "abstract"],
+    "pmcid": "pmcid",
+    "fields": ["authors", "journal", "tags", "published", "license", "abstract"],
+    "list_fields": ["figures", "tables"],
     "derived_fields": {
         "authors": lambda row: [person.strip() for person in row.authors.split(";")],
+        "published": lambda row: pd.to_datetime(row.publish_time, format="%Y-%m-%d"),
         "tags": tags,
     },
     "tag_rules": {
@@ -109,14 +118,52 @@ def parse(row):
         "title": getattr(row, options["title"]),
         "url": getattr(row, options["url"]),
         "field_order": list(options["fields"]),
+        "list_field_order": list(options["list_fields"]),
     }
 
     for field in options["fields"]:
         if field in options["derived_fields"]:
             value = options["derived_fields"][field](row)
-        else:
+        elif hasattr(row, field):
             value = getattr(row, field)
+        else:
+            value = ""
         result[field] = value
+    for field in options["list_fields"]:
+        result[field] = []
+    if hasattr(row, "pmc_json_files"):
+        figs = {}
+        tabs = {}
+        with open(os.path.join(CORD19, getattr(row, "pmc_json_files"))) as f:
+            pmcdat = json.load(f)
+        for k, v in pmcdat["ref_entries"].items():
+            if v["type"] == "figure":
+                caption = v["text"]
+                try:
+                    label = caption.split(":")[0]
+                    fignum = int(re.findall("\d+", label)[0])
+                except:
+                    fignum = int(k.lstrip("FIGREF")) + 1
+                figs[fignum] = caption
+            elif v["type"] == "table":
+                caption = v["text"]
+                try:
+                    label = caption.split(":")[0]
+                    fignum = int(re.findall("\d+", label)[0])
+                except:
+                    fignum = int(k.lstrip("TABREF")) + 1
+                tabs[fignum] = caption
+            if figs:
+                result["figures"] = [
+                    "" if k not in figs else figs[k]
+                    for k in range(1, max(figs.keys()) + 1)
+                ]
+            if tabs:
+                result["tables"] = [
+                    "" if k not in tabs else tabs[k]
+                    for k in range(1, max(tabs.keys()) + 1)
+                ]
+
     return result
 
 

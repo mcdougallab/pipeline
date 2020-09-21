@@ -13,10 +13,12 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 import json
 
-SETTINGS_PATH = "/home/bitnami/app-settings.json"
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+SETTINGS_PATH = os.path.join(BASE_DIR, "app-settings.json")
+
 
 with open(SETTINGS_PATH) as f:
     app_settings = json.load(f)
@@ -91,6 +93,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            "libraries": {"util": "Project.templatetags.util"},
         },
     },
 ]
@@ -103,17 +106,6 @@ WSGI_APPLICATION = "Project.wsgi.application"
 
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "djangostack",
-        "HOST": "/opt/bitnami/postgresql",
-        "PORT": "5432",
-        "USER": "bitnami",
-        "PASSWORD": "c26d05dade",
-    }
-}
-
-EXAMPLE_DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
