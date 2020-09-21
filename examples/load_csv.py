@@ -79,8 +79,16 @@ options = {
     "title": "title",
     "url": "url",
     "pmcid": "pmcid",
-    "fields": ["authors", "journal", "tags", "published", "license", "abstract"],
-    "list_fields": ["figures", "tables"],
+    "fields": [
+        {"name": "authors"},
+        {"name": "journal"},
+        {"name": "tags"},
+        {"name": "published"},
+        {"name": "license"},
+        {"name": "abstract"},
+        {"name": "figures", "type": "list"},
+        {"name": "tables", "type": "list"},
+    ],
     "derived_fields": {
         "authors": lambda row: [person.strip() for person in row.authors.split(";")],
         "published": lambda row: pd.to_datetime(row.publish_time, format="%Y-%m-%d"),
@@ -117,20 +125,22 @@ def parse(row):
     result = {
         "title": getattr(row, options["title"]),
         "url": getattr(row, options["url"]),
-        "field_order": list(options["fields"]),
-        "list_field_order": list(options["list_fields"]),
+        "field_order": options["fields"],
     }
 
-    for field in options["fields"]:
-        if field in options["derived_fields"]:
-            value = options["derived_fields"][field](row)
-        elif hasattr(row, field):
-            value = getattr(row, field)
+    for entry in options["fields"]:
+        field = entry["name"]
+        field_type = None if "type" not in entry else entry["type"]
+        if field_type == "list":
+            value = []
         else:
-            value = ""
+            if field in options["derived_fields"]:
+                value = options["derived_fields"][field](row)
+            elif hasattr(row, field):
+                value = getattr(row, field)
+            else:
+                value = ""
         result[field] = value
-    for field in options["list_fields"]:
-        result[field] = []
     if hasattr(row, "pmc_json_files"):
         figs = {}
         tabs = {}
@@ -143,16 +153,16 @@ def parse(row):
                     label = caption.split(":")[0]
                     fignum = int(re.findall("\d+", label)[0])
                 except:
-                    fignum = int(k.lstrip("FIGREF")) + 1
+                    fignum = int(k[6:]) + 1
                 figs[fignum] = caption
             elif v["type"] == "table":
                 caption = v["text"]
                 try:
                     label = caption.split(":")[0]
-                    fignum = int(re.findall("\d+", label)[0])
+                    tabnum = int(re.findall("\d+", label)[0])
                 except:
-                    fignum = int(k.lstrip("TABREF")) + 1
-                tabs[fignum] = caption
+                    tabnum = int(k[6:]) + 1
+                tabs[tabnum] = caption
             if figs:
                 result["figures"] = [
                     "" if k not in figs else figs[k]
@@ -181,4 +191,4 @@ db.collection.create_index([("status", 1)])
 
 # setup the field indexing
 for field in options["fields"]:
-    db.collection.create_index([(field, 1)])
+    db.collection.create_index([(field["name"], 1)])

@@ -55,7 +55,7 @@ Permission.objects.get_or_create(
 
 fieldnames = set()
 for item in collection.find():
-    fieldnames = fieldnames.union(item["field_order"])
+    fieldnames = fieldnames.union([field["name"] for field in item["field_order"]])
 
 if settings.app_settings["browse_fields"] is None:
     settings.app_settings["browse_fields"] = list(models.fieldnames)

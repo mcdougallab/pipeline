@@ -116,11 +116,16 @@ def _nicestr(item):
         return str(item)
 
 
+def _format_field(paper, field):
+    if "type" in field and field["type"] == "list":
+        return paper[field["name"]]
+    else:
+        return _nicestr(paper[field["name"]])
+
+
 def _process_paper_browse(paper):
     result = {
-        field: _nicestr(paper[field]) if field in paper["field_order"] else paper[field]
-        for d in ["field_order", "list_field_order"]
-        for field in paper[d]
+        field["name"]: _format_field(paper, field) for field in paper["field_order"]
     }
     result["title"] = paper["title"]
     result["_id"] = str(paper["_id"])
@@ -172,11 +177,7 @@ def _prep_paper_for_review(paper):
         "url": paper["url"],
         "notes": paper.get("notes", ""),
         "metadata": {
-            field: _nicestr(paper[field])
-            if field in paper["field_order"]
-            else paper[field]
-            for d in ["field_order", "list_field_order"]
-            for field in paper[d]
+            field["name"]: _format_field(paper, field) for field in paper["field_order"]
         },
     }
 
