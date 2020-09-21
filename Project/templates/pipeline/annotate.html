@@ -43,13 +43,23 @@
                 let item = $(this);
                 let _id = item.attr('data-id');
                 let content = item.val();
-                $.post(
-                    `{{pipelinebase}}/update/${_id}`, 
-                    {"notes": content}
-                ).fail(() => {document.write('update failed; reload?')})
-                .done(function() {console.log('Successful update notes:', _id, content);});
+                _do_update(_id, "notes", content);
+            });
+            $('.field').focusout(function() {
+                let item = $(this);
+                let _id = item.attr('data-id');
+                let name = `annotation.field.${item.attr('data-field')}`;
+                let content = item.val();
+                _do_update(_id, name, content);
             });
         });
+        function _do_update(_id, name, content) {
+            $.post(
+                    `{{pipelinebase}}/update/${_id}`, 
+                    {[name]: content}
+                ).fail(() => {document.write('update failed; reload?')})
+                .done(function() {console.log(`Successful update ${name}:`, _id, content);});
+        }
     </script>
     <style>
         .classifier {
@@ -76,12 +86,12 @@
                                 <textarea class="notesfield" style="width:100%; resize:vertical; margin-bottom: 1em" data-id="{{item.id}}" rows="5" placeholder="notes">{{item.notes}}</textarea>
                                 <br>
                                 <table style="width:100%">
-                                    {% for field in annotation.fields %}
+                                    {% for field in item.field %}
                                         <tr style="width: 100%">
                                             <td><b>{{field.name}}: </b></td>
                                             <td>
                                                 {% if field.type == "text" %}
-                                                    <input type="text" style="width: 100%" data-id="{{item.id}}" data-field="{{field.short_name}}" {% if field.placeholder %}placeholder="{{field.placeholder}}"{% endif %}>
+                                                    <input type="text" class="field" style="width: 100%" data-id="{{item.id}}" data-field="{{field.short_name}}" {% if field.placeholder %}placeholder="{{field.placeholder}}"{% endif %} value="{{field.value}}">
                                                 {% endif %}
                                             </td>
                                         </tr>

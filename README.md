@@ -85,7 +85,7 @@ This is developed and tested on a bitnami django stack.
         ],
         "pipeline_metadata_tags_autocomplete_file": "/home/bitnami/metadata_autocomplete.json"
     }
-- Change the default database in the `Project/settings.py` to one you installed with bitnami.
+- Change the default postgres database in the `Project/settings.py` to one you installed with bitnami.
 - Apply the django migrations
   `python3 manage.py migrate`
 - You will also want to use django admin to create a user with admin permissions from within the

@@ -42,7 +42,7 @@ def annotate(request):
         queue = base_context["annotation"]["queue_in"]
         context = {
             "items": [
-                _prep_paper_for_review(paper)
+                _prep_paper_for_annotate(paper)
                 for paper in _filter_papers(request, models.papers_by_status(queue))
             ],
             "title": f"{base_context['toolname']}: annotate",
@@ -169,6 +169,22 @@ def _prep_paper_for_review(paper):
     }
 
 
+def _prep_paper_for_annotate(paper):
+    result = _prep_paper_for_review(paper)
+    annotations = paper.get("annotation", {}).get("field", {})
+    result["field"] = [
+        {
+            "name": item["name"],
+            "value": annotations.get(item["short_name"], ""),
+            "type": item["type"],
+            "short_name": item["short_name"],
+            "placeholder": item.get("placeholder"),
+        }
+        for item in base_context["annotation"]["fields"]
+    ]
+    return result
+
+
 def review_by_id(request, id=None):
     if request.user.has_perm("auth.pipeline_review"):
         context = {
@@ -221,14 +237,22 @@ def review(request, status=None):
 
 def update(request, id=None):
     # TODO: as we can expand to more pipeline stages, make sure permissions match fields being updated
-    if request.user.has_perm("auth.pipeline_review"):
-        models.update(
-            id,
-            title=request.POST.get("title"),
-            url=request.POST.get("url"),
-            status=request.POST.get("status"),
-            notes=request.POST.get("notes"),
-        )
+    if request.user.has_perm("auth.pipeline_review") or request.user.has_perm(
+        "auth.pipeline_annotate"
+    ):
+        changes = {}
+        for key, value in request.POST.items():
+            if key in ["title", "url", "status", "notes"]:
+                # these can be changed by anybody who can do updates
+                pass
+            elif (
+                key == "annotation.metadata_tags" or key.startswith("annotation.field.")
+            ) and request.user.has_perm("auth.pipeline_annotate"):
+                pass
+            else:
+                return HttpResponse("403 Forbidden", status=403)
+            changes[key] = value
+        models.update(id, **changes)
         return HttpResponse("success")
     else:
         return HttpResponse("403 Forbidden", status=403)
