@@ -58,7 +58,7 @@ def tags(row):
 
 
 options = {
-    "csvfile": "/home/bitnami/2020-09-08/metadata.csv",
+    "csvfile": "/home/bitnami/2020-10-19/metadata.csv",
     "keep_rule": lambda row: row.license
     in [
         "green-oa",
