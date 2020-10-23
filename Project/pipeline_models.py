@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from django.db import models
+import datetime
 from . import settings
 
 mongodb = MongoClient()
@@ -64,7 +65,16 @@ def papers_by_status(status):
     return collection.find({"status": status})
 
 
-def update(paper_id, **kwargs):
+def update(paper_id, username, **kwargs):
     new_values = {item: value for item, value in kwargs.items() if value is not None}
     if new_values:
         collection.update_many({"_id": ObjectId(paper_id)}, {"$set": new_values})
+        now = datetime.datetime.now().isoformat()
+        collection.update_many(
+            {"_id": ObjectId(paper_id)},
+            {
+                "$push": {
+                    "log": {"username": username, "time": now, "data": new_values}
+                }
+            },
+        )

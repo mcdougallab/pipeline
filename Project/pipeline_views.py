@@ -253,7 +253,7 @@ def update(request, id=None):
             else:
                 return HttpResponse("403 Forbidden", status=403)
             changes[key] = value
-        models.update(id, **changes)
+        models.update(id, request.user.username, **changes)
         return HttpResponse("success")
     else:
         return HttpResponse("403 Forbidden", status=403)
