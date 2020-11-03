@@ -24,6 +24,9 @@
                         {% if perms.auth.pipeline_annotate and annotation %}
                             <li><a href="{{pipelinebase}}/annotate">Annotate</a></li>
                         {% endif %}
+                        {% if perms.auth.draft_solicitation %}
+                            <li><a href="{{pipelinebase}}/draft_solicitation">Draft solicitation</a></li>
+                      {% endif %}                        
                     </ul>
                 {% endif %}
                 {% if perms.auth.pipeline_review %}

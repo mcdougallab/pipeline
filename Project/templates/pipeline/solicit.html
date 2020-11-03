@@ -2,27 +2,20 @@
 
 {% block head %}
     <script>
+        let templates = {{templates_json|safe}};
         $(() => {
-            $('button.editbutton').click(function() {
+            $('select').change(function() {
                 let item = $(this);
                 let id = item.attr('data-id');
-                edit_active_id = id;
-                $('#edittitle').val($(`.paperlink[data-id="${id}"]`).text());
-                $('#editurl').val($(`.paperlink[data-id="${id}"]`).attr('href'));
-                $("#editmodal").modal('show');
-            });
-            $('#editmodalsave').click(function() {
-                let title = $('#edittitle').val();
-                let url = $('#editurl').val();
-                let _id = edit_active_id;
-                $('#editmodal').modal('hide');
-                $.post(
-                    `{{pipelinebase}}/update/${_id}`, 
-                    {"title": title, "url": url}
-                ).fail(() => {document.write('update failed; reload?')})
-                .done(function() {console.log('Successful update status:', _id, title, url);});
-                $(`.paperlink[data-id="${_id}"]`).attr('href', url).text(title);
-            });
+                let template_id = item.val();
+                if (template_id > -1) {
+                    console.log('apply template', template_id, 'to', id);
+                    let content = eval("`" + templates[template_id].text + "`");
+                    $(`textarea[data-id="${id}"]`).val(content);
+                    do_email_update(id, content);
+                    adjust_text_area_size(id);
+                }
+            });  
             $('.classifier').click(function() {
                 let item = $(this);
                 let _id = item.attr('data-id');
@@ -39,37 +32,51 @@
                     $('#reviewedpane').show();
                 });
             });
-            $('.notesfield').focusout(function() {
+            $('.emailfield').focusout(function() {
                 let item = $(this);
                 let _id = item.attr('data-id');
                 let content = item.val();
-                $.post(
-                    `{{pipelinebase}}/update/${_id}`, 
-                    {"notes": content}
-                ).fail(() => {document.write('update failed; reload?')})
-                .done(function() {console.log('Successful update notes:', _id, content);});
+                do_email_update(_id, content);
             });
         });
+        function do_email_update(_id, content) {
+            $.post(
+                    `{{pipelinebase}}/update/${_id}`, 
+                    {"email": content}
+                ).fail(() => {document.write('update failed; reload?')})
+                .done(function() {console.log('Successful update email:', _id, content);});
+        }
     </script>
 {% endblock %}
 {% block content %}
     <div class="row">
         <div class="col-md-12">
-            <h1>Review{% if status %}: {{status}}{% endif %}</h1>
+            <h1>{{status}}</h1>
             <div id="reviewpane">
-                <h2>To review:</h2>
+                <h2>To prepare:</h2>
                 
 
                 {% for item in items %}
                     <div class="col-sm-12" style="border: 1px solid black; padding: 1em; background-color: white; margin-bottom: 1em" id="box{{item.id}}">
                         <div class="row">
                             <div class="col-sm-9 col-md-10">
-                                <a target="_blank" href="{{item.url}}" data-id="{{item.id}}" class="paperlink"><b>{{item.title}}</b></a>&nbsp;&nbsp;&nbsp;<button data-id="{{item.id}}" class="editbutton"><i class="fa fa-pencil" title="edit"></i></button>
+                                <a target="_blank" href="{{item.url}}" data-id="{{item.id}}" class="paperlink"><b>{{item.title}}</b></a>
                                 <br>
                                 {% for field, value in item.metadata.items %}
                                     <b>{{field}}: </b> {{value}}<br>
                                 {% endfor %}
-                                <textarea class="notesfield" style="width:100%; resize:vertical; margin-bottom: 1em" data-id="{{item.id}}" rows="5" placeholder="notes">{{item.notes}}</textarea>
+                                <table style="margin-top: 1em">
+                                    <tr><th>To</th><td><input type="email" data-id="${id}" placeholder="email" data-field="email" value="{{item.email_address}}" style="width:40em"></input></td></tr>
+                                    <tr><th>Subject:&nbsp;</th><td><input type="email" data-id="${id}" data-field="subject" placeholder="subject" value="{{item.email_subject}}" style="width:40em"></input></td></tr>
+                                </table>
+                                <select data-id="{{item.id}}">
+                                    <option value="-1" data-id="{{item.id}}">Edit text below or select a template here</option>
+                                    {% for template in templates %}
+                                        <option value="{{forloop.counter0}}" data-id="{{item.id}}">{{template.name}}</option>
+                                    {% endfor %}
+                                </select>
+                                <br>
+                                <textarea class="emailfield" style="width:100%; resize:vertical; margin-bottom: 1em" data-id="{{item.id}}" rows="10" placeholder="Enter email text here">{{item.email}}</textarea>
                             </div>
                             <div class="col-sm-3 col-md-2 buttonpanel">
                                 {% for button in buttons %}
@@ -81,7 +88,7 @@
                 {% endfor %}
             </div>
             <div id="reviewedpane" style="display:none">
-                <h2>Reviewed:</h2>
+                <h2>Processed:</h2>
                 <div id="revieweditems"></div>
             </div>
         </div>

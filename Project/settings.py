@@ -51,7 +51,7 @@ SECRET_KEY = app_settings["secret_key"]
 DEBUG = True
 
 ALLOWED_HOSTS = ["10.0.2.15"]
-
+ALLOWED_HOSTS.append("127.0.0.1")
 
 # Application definition
 

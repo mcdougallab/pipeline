@@ -72,9 +72,5 @@ def update(paper_id, username, **kwargs):
         now = datetime.datetime.now().isoformat()
         collection.update_many(
             {"_id": ObjectId(paper_id)},
-            {
-                "$push": {
-                    "log": {"username": username, "time": now, "data": new_values}
-                }
-            },
+            {"$push": {"log": {"username": username, "time": now, "data": new_values}}},
         )

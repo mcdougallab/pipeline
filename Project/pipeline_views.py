@@ -1,6 +1,6 @@
 import json
 from django.shortcuts import redirect, render
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from . import settings
@@ -14,6 +14,7 @@ base_context = {
     "browse_fields": settings.app_settings.get("browse_fields"),
     "buttons": settings.app_settings["pipeline_review_buttons"],
     "annotation": settings.app_settings.get("pipeline_annotation"),
+    "has_draft_solicitations": "draft_solicitations" in settings.app_settings
 }
 
 try:
@@ -235,11 +236,36 @@ def review(request, status=None):
         return login_redirect(request)
 
 
+def draft_solicitation(request):
+    if request.user.has_perm("auth.pipeline_draft_solicitation"):
+        try:
+            my_settings = settings.app_settings["draft_solicitations"]
+        except:
+            raise Http404("No such URL")
+        context = {
+            "items": [
+                _prep_paper_for_review(paper)
+                for paper in _filter_papers(
+                    request, models.papers_by_status(my_settings["queue"])
+                )
+            ],
+            "title": f"{base_context['toolname']}: draft solicitations",
+            "status": f"{base_context['toolname']}: draft solicitations",
+            "templates_json": json.dumps(my_settings["templates"]),
+            "templates": my_settings["templates"]
+        }
+        context.update(base_context)
+        context["buttons"] = my_settings["buttons"]
+        return render(request, "pipeline/solicit.html", context)
+    else:
+        return login_redirect(request)
+
+
 def update(request, id=None):
     # TODO: as we can expand to more pipeline stages, make sure permissions match fields being updated
     if request.user.has_perm("auth.pipeline_review") or request.user.has_perm(
         "auth.pipeline_annotate"
-    ):
+    ) or request.user.has_perm("auth.pipeline_draft_solicitation"):
         changes = {}
         for key, value in request.POST.items():
             if key in ["title", "url", "status", "notes"]:
@@ -250,6 +276,11 @@ def update(request, id=None):
             ) and request.user.has_perm("auth.pipeline_annotate"):
                 if key == "annotation.metadata_tags":
                     value = json.loads(value)
+            elif (
+                request.user.has_perm("auth.pipeline_draft_solicitation") and
+                key in ("email", "email_address", "email_subject")
+            ):
+                pass
             else:
                 return HttpResponse("403 Forbidden", status=403)
             changes[key] = value

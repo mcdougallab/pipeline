@@ -154,7 +154,7 @@
                 </li>
             {% endif %}
             {% if request.user.is_authenticated %}
-              {% if perms.auth.pipeline_review or perms.auth.pipeline_annotate %}
+              {% if perms.auth.pipeline_review or perms.auth.pipeline_annotate or perms.auth.draft_solicitation %}
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-expanded="False">Data entry</a>
                   <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="padding:15px">
@@ -163,6 +163,9 @@
                     {% endif %}
                     {% if perms.auth.pipeline_annotate and annotation %}
                       <a class="dropdown-item" href="{{pipelinebase}}/annotate">Annotate</a>
+                    {% endif %}
+                    {% if perms.auth.draft_solicitation %}
+                      <a class="dropdown-item" href="{{pipelinebase}}/draft_solicitation">Draft solicitation</a>
                     {% endif %}
                   </div>
                 </li>
