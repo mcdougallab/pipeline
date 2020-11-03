@@ -39,7 +39,11 @@ urlpatterns = [
         name="review_by_id",
     ),
     path(prebase("review/<slug:status>"), pipeline_views.review, name="review"),
-    path(prebase("draft_solicitation"), pipeline_views.draft_solicitation, name="draft_solicitation"),
+    path(
+        prebase("draft_solicitation"),
+        pipeline_views.draft_solicitation,
+        name="draft_solicitation",
+    ),
     path(prebase("browse/<slug:by>"), pipeline_views.browse, name="browse"),
     path(prebase("browse"), pipeline_views.browse, name="browse"),
     path(prebase("update/<slug:id>"), pipeline_views.update, name="update"),

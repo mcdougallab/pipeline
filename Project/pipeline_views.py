@@ -14,7 +14,7 @@ base_context = {
     "browse_fields": settings.app_settings.get("browse_fields"),
     "buttons": settings.app_settings["pipeline_review_buttons"],
     "annotation": settings.app_settings.get("pipeline_annotation"),
-    "has_draft_solicitations": "draft_solicitations" in settings.app_settings
+    "has_draft_solicitations": "draft_solicitations" in settings.app_settings,
 }
 
 try:
@@ -252,7 +252,7 @@ def draft_solicitation(request):
             "title": f"{base_context['toolname']}: draft solicitations",
             "status": f"{base_context['toolname']}: draft solicitations",
             "templates_json": json.dumps(my_settings["templates"]),
-            "templates": my_settings["templates"]
+            "templates": my_settings["templates"],
         }
         context.update(base_context)
         context["buttons"] = my_settings["buttons"]
@@ -263,9 +263,11 @@ def draft_solicitation(request):
 
 def update(request, id=None):
     # TODO: as we can expand to more pipeline stages, make sure permissions match fields being updated
-    if request.user.has_perm("auth.pipeline_review") or request.user.has_perm(
-        "auth.pipeline_annotate"
-    ) or request.user.has_perm("auth.pipeline_draft_solicitation"):
+    if (
+        request.user.has_perm("auth.pipeline_review")
+        or request.user.has_perm("auth.pipeline_annotate")
+        or request.user.has_perm("auth.pipeline_draft_solicitation")
+    ):
         changes = {}
         for key, value in request.POST.items():
             if key in ["title", "url", "status", "notes"]:
@@ -276,9 +278,10 @@ def update(request, id=None):
             ) and request.user.has_perm("auth.pipeline_annotate"):
                 if key == "annotation.metadata_tags":
                     value = json.loads(value)
-            elif (
-                request.user.has_perm("auth.pipeline_draft_solicitation") and
-                key in ("email", "email_address", "email_subject")
+            elif request.user.has_perm("auth.pipeline_draft_solicitation") and key in (
+                "email",
+                "email_address",
+                "email_subject",
             ):
                 pass
             else:
