@@ -22,7 +22,7 @@ from .settings import pipelinebase, app_settings
 
 
 def prebase(url):
-    return f"{pipelinebase}/{url}" if pipelinebase else url
+    return url
 
 
 urlpatterns = [
