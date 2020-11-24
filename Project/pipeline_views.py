@@ -15,6 +15,7 @@ base_context = {
     "buttons": settings.app_settings["pipeline_review_buttons"],
     "annotation": settings.app_settings.get("pipeline_annotation"),
     "has_draft_solicitations": "draft_solicitations" in settings.app_settings,
+    "allow_db_query": settings.app_settings.get("allow_db_query", False)
 }
 
 try:
@@ -260,6 +261,24 @@ def draft_solicitation(request):
     else:
         return login_redirect(request)
 
+
+def query(request):
+    """process user submitted db queries"""
+    if request.user.has_perm("auth.pipeline_db_query"):
+        lookfor = request.POST.get("q")
+        context = dict(base_context)
+        if lookfor:
+            lookfor = json.loads(lookfor)
+            results = []
+            for item in models.query(lookfor):
+                del item['_id']
+                results.append(item)
+            context["result"] = json.dumps(results, indent=2)
+            return render(request, "pipeline/query_results.html", context)
+        else:
+            return render(request, "pipeline/query.html", context)
+    else:
+        return login_redirect(request)
 
 def update(request, id=None):
     # TODO: as we can expand to more pipeline stages, make sure permissions match fields being updated

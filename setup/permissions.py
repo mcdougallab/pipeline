@@ -34,3 +34,9 @@ Permission.objects.get_or_create(
     name="Can send solicitations in pipeline",
     content_type=user_type,
 )
+
+Permission.objects.get_or_create(
+    codename="pipeline_db_query",
+    name="Can directly query pipeline",
+    content_type=user_type,
+)

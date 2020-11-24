@@ -74,3 +74,7 @@ def update(paper_id, username, **kwargs):
             {"_id": ObjectId(paper_id)},
             {"$push": {"log": {"username": username, "time": now, "data": new_values}}},
         )
+
+
+def query(pattern):
+    return collection.find(pattern)

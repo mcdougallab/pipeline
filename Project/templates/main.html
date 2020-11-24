@@ -167,6 +167,9 @@
                     {% if perms.auth.draft_solicitation %}
                       <a class="dropdown-item" href="{{pipelinebase}}/draft_solicitation">Draft solicitation</a>
                     {% endif %}
+                    {% if perms.auth.pipeline_db_query and allow_db_query %}
+                      <a class="dropdown-item" href="{{pipelinebase}}/query">Query database</a>
+                    {% endif %}
                   </div>
                 </li>
               {% endif %}
