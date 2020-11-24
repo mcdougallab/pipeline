@@ -64,7 +64,7 @@
                     <div class="col-sm-12" style="border: 1px solid black; padding: 1em; background-color: white; margin-bottom: 1em" id="box{{item.id}}">
                         <div class="row">
                             <div class="col-sm-9 col-md-10">
-                                <a target="_blank" href="{{item.url}}" data-id="{{item.id}}" class="paperlink"><b>{{item.title}}</b></a>&nbsp;&nbsp;&nbsp;<button data-id="{{item.id}}" class="editbutton"><i class="fa fa-pencil" title="edit"></i></button>
+                                <a target="_blank" href="{{item.url}}" data-id="{{item.id}}" class="paperlink"><b>{{item.title}}</b></a>&nbsp;&nbsp;&nbsp;<button data-id="{{item.id}}" class="editbutton"><i class="fas fa-edit" title="edit"></i></button>
                                 <br>
                                 {% for field, value in item.metadata.items %}
                                     <b>{{field}}: </b> {{value}}<br>

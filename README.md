@@ -144,7 +144,8 @@ For performance reasons, the `status` attribute of the documents should be index
   may not be appropriate if this is one django app on a more complicated website.
  - the settings file may need the full path to `TEMPLATES["DIRS"]`
 
-
+## On combining with other tools
+- Make sure that the other tools include javascript code to support CSRF in their main.html, as is done here.
 
 ## Contributing
 For stylistic consistency, all Python code is to be formatted using `black`.

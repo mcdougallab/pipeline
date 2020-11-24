@@ -10,6 +10,10 @@
             formatSearch: () => 'filter'
         });
     });
+    
+    function review_link(queue) {
+        return `<a href="{{pipelinebase}}/review/${queue}">${queue}</a>`
+    }
 </script>
 <style>
     #counttable > th, td {
@@ -24,7 +28,7 @@
             <table id="counttable" data-toggle="counttable">
                 <thead>
                     <tr>
-                        <th data-sortable="true" data-field="n">
+                        <th data-sortable="true" data-field="n" data-formatter="review_link">
                             Status
                         </th>
                         <th data-sortable="true" data-field="c">
