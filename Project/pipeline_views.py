@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout, update_session_auth
 from django.contrib.auth.forms import PasswordChangeForm
 from . import settings
 from . import pipeline_models as models
+import random
 
 
 base_context = {
@@ -216,6 +217,11 @@ def _get_subset(iterable, filter_rule, start, num):
 def _filter_papers(request, papers):
     start = int(request.GET.get("start", 0))
     num = int(request.GET.get("max", 100))
+    if settings.app_settings.get("random_paper_order"):
+        items = list(papers)
+        random.shuffle(items)
+        # TODO: remove this hard-coded size
+        return items[:10]
     # TODO: this is where we need to make sure the thing hasn't been assigned to someone else recently
     filter_rule = lambda item: True
     return list(_get_subset(papers, filter_rule, start, num))
