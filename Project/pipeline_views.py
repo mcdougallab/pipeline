@@ -16,7 +16,7 @@ base_context = {
     "buttons": settings.app_settings["pipeline_review_buttons"],
     "annotation": settings.app_settings.get("pipeline_annotation"),
     "has_draft_solicitations": "draft_solicitations" in settings.app_settings,
-    "allow_db_query": settings.app_settings.get("allow_db_query", False)
+    "allow_db_query": settings.app_settings.get("allow_db_query", False),
 }
 
 try:
@@ -229,6 +229,11 @@ def _filter_papers(request, papers):
 
 def review(request, status=None):
     if request.user.has_perm("auth.pipeline_review"):
+        guidelines = (
+            settings.app_settings.get("triage_guidelines", "")
+            if status == "triage"
+            else ""
+        )
         context = {
             "items": [
                 _prep_paper_for_review(paper)
@@ -236,6 +241,7 @@ def review(request, status=None):
             ],
             "title": f"{base_context['toolname']}: review",
             "status": status,
+            "guidelines": guidelines,
         }
         context.update(base_context)
         return render(request, "pipeline/review.html", context)
@@ -277,7 +283,7 @@ def query(request):
             lookfor = json.loads(lookfor)
             results = []
             for item in models.query(lookfor):
-                del item['_id']
+                del item["_id"]
                 results.append(item)
             context["result"] = json.dumps(results, indent=2)
             return render(request, "pipeline/query_results.html", context)
@@ -285,6 +291,7 @@ def query(request):
             return render(request, "pipeline/query.html", context)
     else:
         return login_redirect(request)
+
 
 def update(request, id=None):
     # TODO: as we can expand to more pipeline stages, make sure permissions match fields being updated

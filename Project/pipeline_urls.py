@@ -57,6 +57,4 @@ if "pipeline_annotation" in app_settings:
     )
 
 if app_settings.get("allow_db_query"):
-    urlpatterns.append(
-        path(prebase("query"), pipeline_views.query, name="query")
-    )
+    urlpatterns.append(path(prebase("query"), pipeline_views.query, name="query"))

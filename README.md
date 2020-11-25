@@ -34,6 +34,7 @@ This is developed and tested on a bitnami django stack.
   - `footerhtml` -- optional, but anything you put here will appear in the footer of every page
   - `toolname` -- optional, defaults to "Pipeline"
   - `browse_fields` -- optional, defaults to all
+  - `triage_guidelines` -- optional, defaults to empty; shown on review: triage stage. HTML assumed
   - `random_paper_order` -- optional, defaults to false. If true: triage returns 10 random papers
   - `pipeline_review_buttons` -- list of buttons and their properties for review queues;
     from our experience, we recommend including at least reject, accept, and discussion queues.
