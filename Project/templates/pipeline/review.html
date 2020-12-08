@@ -2,6 +2,13 @@
 
 {% block head %}
     <script>
+        {% if highlight_words %}
+            const highlight_words = [
+                {% for word in highlight_words %}
+                    "{{word}}"{% if not loop.last %},{% endif %}
+                {% endfor %}
+            ];
+        {% endif %}
         $(() => {
             $('button.editbutton').click(function() {
                 let item = $(this);
@@ -49,8 +56,24 @@
                 ).fail(() => {document.write('update failed; reload?')})
                 .done(function() {console.log('Successful update notes:', _id, content);});
             });
+            {% if highlight_words %}
+                // highlight terms
+                $.each($('.highlightme'), function() {
+                    const item = $(this);
+                    let html = item.html();
+                    for (let term of highlight_words) {
+                        html = html.replaceAll(term, `<span class="highlighted">${term}</span>`);
+                    }
+                    item.html(html);
+                });
+            {% endif %}
         });
     </script>
+    <style>
+        .highlighted {
+            font-weight: bold;
+        }
+    </style>
 {% endblock %}
 {% block content %}
     <div class="row">
@@ -68,7 +91,7 @@
                                 <a target="_blank" href="{{item.url}}" data-id="{{item.id}}" class="paperlink"><b>{{item.title}}</b></a>&nbsp;&nbsp;&nbsp;<button data-id="{{item.id}}" class="editbutton"><i class="fas fa-edit" title="edit"></i></button>
                                 <br>
                                 {% for field, value in item.metadata.items %}
-                                    <b>{{field}}: </b> {{value}}<br>
+                                    <b>{{field}}: </b> {% if field in highlight_fields %}<span class="highlightme">{% endif %}{{value}}{% if field in highlight_fields %}</span>{% endif %}<br>
                                 {% endfor %}
                                 <textarea class="notesfield" style="width:100%; resize:vertical; margin-bottom: 1em" data-id="{{item.id}}" rows="5" placeholder="notes">{{item.notes}}</textarea>
                             </div>
@@ -81,6 +104,7 @@
                     </div>
                 {% endfor %}
             </div>
+            <hr>
             <div id="reviewedpane" style="display:none">
                 <h2>Reviewed:</h2>
                 <div id="revieweditems"></div>

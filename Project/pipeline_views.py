@@ -17,6 +17,8 @@ base_context = {
     "annotation": settings.app_settings.get("pipeline_annotation"),
     "has_draft_solicitations": "draft_solicitations" in settings.app_settings,
     "allow_db_query": settings.app_settings.get("allow_db_query", False),
+    "highlight_fields": settings.app_settings.get("highlight_fields", []),
+    "highlight_words": settings.app_settings.get("highlight_words", []),
 }
 
 try:
