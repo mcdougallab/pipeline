@@ -63,7 +63,7 @@
 
                 {% for item in items %}
                     <div class="col-sm-12" style="border: 1px solid black; padding: 1em; background-color: white; margin-bottom: 1em" id="box{{item.id}}">
-                        <div class="row">
+                        <div class="row" style="background-color: white; margin: 1em">
                             <div class="col-sm-9 col-md-10">
                                 <a target="_blank" href="{{item.url}}" data-id="{{item.id}}" class="paperlink"><b>{{item.title}}</b></a>&nbsp;&nbsp;&nbsp;<button data-id="{{item.id}}" class="editbutton"><i class="fas fa-edit" title="edit"></i></button>
                                 <br>
