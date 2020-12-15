@@ -42,7 +42,16 @@
                     $('#revieweditems').prepend(
                         $(`#box${_id}`).css('background-color', item.css('background-color'))
                     );
-                    console.log('Successful update status:', _id, status);
+                    let title = $(`a[data-id='${_id}']`).text();
+                    $('.notificationzone').append(`
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <strong>${title}</strong> recorded as ${queue}.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>`);
+                        setTimeout(() => {$('.alert').alert('close')}, 3000);
+                    console.log('Successful update status:', _id, queue);
                     $('#reviewedpane').show();
                 });
             });
@@ -72,6 +81,10 @@
     <style>
         .highlighted {
             font-weight: bold;
+        }
+        .notificationzone {
+            position: fixed!important;
+            top: 0;
         }
     </style>
 {% endblock %}
@@ -109,6 +122,7 @@
                 <h2>Reviewed:</h2>
                 <div id="revieweditems"></div>
             </div>
+            <div class="notificationzone"></div>
         </div>
     </div>
     <div id="editmodal" class="modal fade">
