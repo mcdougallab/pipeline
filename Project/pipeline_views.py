@@ -38,11 +38,11 @@ if base_context["browse_fields"] is None:
 index_content_filename = settings.app_settings.get("index-content")
 index_content = ""
 if index_content_filename:
-    #try:
-        with open(index_content_filename) as f:
-            index_content = f.read()
-    #except:
-        pass
+    # try:
+    with open(index_content_filename) as f:
+        index_content = f.read()
+    # except:
+    pass
 
 
 def index(request):
