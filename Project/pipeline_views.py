@@ -35,9 +35,18 @@ except:
 if base_context["browse_fields"] is None:
     base_context["browse_fields"] = list(models.fieldnames)
 
+index_content_filename = settings.app_settings.get("index-content")
+index_content = ""
+if index_content_filename:
+    #try:
+        with open(index_content_filename) as f:
+            index_content = f.read()
+    #except:
+        pass
+
 
 def index(request):
-    context = {"title": base_context["toolname"]}
+    context = {"title": base_context["toolname"], "index_content": index_content}
     context.update(base_context)
     return render(request, "index.html", context)
 

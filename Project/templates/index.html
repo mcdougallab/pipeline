@@ -8,6 +8,9 @@
                 <p>
                     Welcome {{ request.user.username }}. When you are done here, you may <a href="{{pipelinebase}}/logout?next={{request.get_full_path | urlencode}}">logout</a>.
                 </p>
+                {% if index_content %}
+                    {{ index_content | safe }}
+                {% endif %}
                 <p>
                     You have access to the following pipeline stages:
                 </p>
@@ -49,7 +52,12 @@
 
 
             {% else %}
-                You must <a href="{{pipelinebase}}/login?next={{request.get_full_path | urlencode}}">Login</a> to do anything here.
+                {% if index_content %}
+                    {{ index_content | safe }}
+                {% else %}
+                    You must <a href="{{pipelinebase}}/login?next={{request.get_full_path | urlencode}}">Login</a> to do anything here.
+                {% endif %}
+
             {% endif %}
         </div>
     </div>
