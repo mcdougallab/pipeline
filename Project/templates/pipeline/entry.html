@@ -31,6 +31,24 @@ background-color: white; margin-bottom: 1em">
         $(() => {
             add_an_entry_form();
         });
+
+        function get_block_data(block) {
+            let data = {};
+            for (let item of block.find("input")) {
+                data[item.getAttribute("data-fieldname")] = item.value;
+            }
+            return data;
+        }
+
+        function gather_data() {
+            let data = {"global_fields": get_block_data($(".globaldata"))};
+            let local_data = [];
+            for (let block of $('.data-block')) {
+                local_data.push(get_block_data($(block)));
+            }
+            data["local_data"] = local_data;
+            return data;
+        }
         </script>
     <style>
         .highlighted {
