@@ -12,7 +12,12 @@
 background-color: white; margin-bottom: 1em">
             {% for field in userentry.fields %}
                 <div class="row bottom-margin">
-                    <div class="col-md-4 text-md-right" title="field.help_text">{{field.name}}</div>
+                    <div class="col-md-4 text-md-right" title="{{field.help_text}}">
+                        <a tabindex="0" data-toggle="popover" data-trigger="focus" data-content="{{field.help_text}}" data-placement="top">
+                            <span style="cursor:help">{{field.name}}</span>
+                            <i class="far fa-question-circle"></i>
+                        </a>
+                    </div>
                     <div class="col-md-8"><input type="text" data-fieldname="{{field.field}}" placeholder="{{field.example}}" style="width:100%"></div>
                     <div class="d-md-none">&nbsp;</div>                
                 </div>
@@ -27,6 +32,10 @@ background-color: white; margin-bottom: 1em">
         </div>`;
         function add_an_entry_form() {
             $('#entryforms').append(signature_entry);
+            enable_popovers();
+        }
+        function enable_popovers() {
+            $('[data-toggle="popover"]').popover();
         }
         $(() => {
             add_an_entry_form();
@@ -64,10 +73,8 @@ background-color: white; margin-bottom: 1em">
     <div class="row">
         <div class="col-md-12">
             <h1>{{userentry.title}}</h1>
-            <p>{{userentry.header}}<br><br>
-                Arunachalam PS et al (2020). Systems biological assessment of immunity 
-    to mild versus severe COVID-19 infection in humans. <i>Science</i>, 369(6508), 
-    1210-1220.
+            <p>
+                {{userentry.header}}
             </p>
             <div class="globaldata">
                 {% for field in userentry.global_fields %}
