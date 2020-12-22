@@ -60,4 +60,16 @@ if app_settings.get("allow_db_query"):
     urlpatterns.append(path(prebase("query"), pipeline_views.query, name="query"))
 
 if app_settings.get("userentry"):
-    urlpatterns.append(path(prebase("entry"), pipeline_views.entry, name="entry"))
+    urlpatterns.append(
+        path(prebase("entry/<slug:paper_id>"), pipeline_views.entry, name="entry")
+    )
+    urlpatterns.append(
+        path(prebase("thankyou"), pipeline_views.thankyou, name="thankyou")
+    )
+    urlpatterns.append(
+        path(
+            prebase("update_userdata/<slug:id>"),
+            pipeline_views.update_userdata,
+            name="update_userdata",
+        )
+    )

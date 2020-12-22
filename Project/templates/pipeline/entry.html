@@ -7,6 +7,7 @@
         }
     </style>
     <script>
+        const initial_userdata = {{userdata|safe}};
         const signature_entry = `
         <div class="col-sm-12 data-block" style="border: 1px solid black; padding: 1em; 
 background-color: white; margin-bottom: 1em">
@@ -39,6 +40,15 @@ background-color: white; margin-bottom: 1em">
         }
         $(() => {
             add_an_entry_form();
+            {% if userdata != "{}" %}
+                for (let item of $(".globaldata").find("input")) {
+                    let fieldname = item.getAttribute("data-fieldname");
+                    let my_data = initial_userdata["global_fields"][fieldname];
+                    if (my_data != undefined) {
+                        item.value = my_data;
+                    }
+                }
+            {% endif %}
         });
 
         function get_block_data(block) {
@@ -57,6 +67,17 @@ background-color: white; margin-bottom: 1em">
             }
             data["local_data"] = local_data;
             return data;
+        }
+
+        function submit() {
+            let data = gather_data();
+            $.post(
+                    `{{pipelinebase}}/update_userdata/{{paper_id}}`, 
+                    {"userdata": JSON.stringify(gather_data())}
+                ).fail(() => {document.write('update failed; reload?')})
+                .done(() => {
+                    window.location.href = '{{pipelinebase}}/thankyou';
+                });
         }
         </script>
     <style>
@@ -94,7 +115,7 @@ background-color: white; margin-bottom: 1em">
             <div id="entryforms"></div>
             <div style="text-align: right">
                 <button class="btn" style="background-color: blue; color: 
-    white">Submit</button>
+    white" onclick="submit()">Submit</button>
             </div>
         </div>
     </div>

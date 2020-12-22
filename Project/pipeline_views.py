@@ -304,6 +304,22 @@ def query(request):
         return login_redirect(request)
 
 
+def thankyou(request):
+    context = dict(base_context)
+    context["title"] = f"{base_context['toolname']}: Thank you"
+
+    return render(request, "pipeline/thankyou.html", context)
+
+
+def update_userdata(request, id=None):
+    try:
+        userdata = json.loads(request.POST.get("userdata", "{}"))
+        models.update_userdata(id, userdata)
+        return HttpResponse("success")
+    except:
+        return HttpResponse("403 Forbidden", status=403)
+
+
 def update(request, id=None):
     # TODO: as we can expand to more pipeline stages, make sure permissions match fields being updated
     if (
@@ -357,9 +373,14 @@ def change_password(request):
         return login_redirect(request)
 
 
-def entry(request):
+def entry(request, paper_id=None):
     context = dict(base_context)
     context["userentry"] = settings.app_settings.get("userentry", {})
+    try:
+        context["userdata"] = json.dumps(models.get_userdata(paper_id))
+    except:
+        raise Http404("Not found")
+    context["paper_id"] = paper_id
     context[
         "title"
     ] = f"{base_context['toolname']}: {context['userentry'].get('title')}"

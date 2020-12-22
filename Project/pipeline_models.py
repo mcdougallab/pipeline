@@ -3,6 +3,7 @@ from bson.objectid import ObjectId
 from django.db import models
 import datetime
 from . import settings
+import json
 
 mongodb = MongoClient()
 db = mongodb[settings.app_settings["db_name"]]
@@ -74,6 +75,28 @@ def update(paper_id, username, **kwargs):
             {"_id": ObjectId(paper_id)},
             {"$push": {"log": {"username": username, "time": now, "data": new_values}}},
         )
+
+
+def update_userdata(paper_id, userdata):
+    logfile = settings.app_settings["userentry"].get("logfile")
+    if logfile:
+        with open(logfile, "a") as f:
+            f.write(
+                json.dumps(
+                    {
+                        "time": datetime.datetime.now().isoformat(),
+                        "userdata": json.dumps(userdata),
+                    }
+                )
+                + "\n"
+            )
+    collection.update_many(
+        {"_id": ObjectId(paper_id)}, {"$set": {"userdata": userdata}}
+    )
+
+
+def get_userdata(paper_id):
+    return paper_by_id(paper_id).get("userdata", {})
 
 
 def query(pattern):
