@@ -48,6 +48,25 @@ background-color: white; margin-bottom: 1em">
                         item.value = my_data;
                     }
                 }
+                if (initial_userdata.local_data != undefined) {
+                    for (let i = 0; i < initial_userdata.local_data.length - 1; i++) {
+                        add_an_entry_form();
+                    }
+                }
+                let all_data_blocks = $('.data-block');
+                // at this point we have a form for each set of local_data
+                // so populate them
+                for (let i = 0; i < initial_userdata.local_data.length; i++) {
+                    let my_local_data = initial_userdata.local_data[i];
+                    let block = all_data_blocks[i];
+                    for (let item of $(block).find("input")) {
+                        let fieldname = item.getAttribute("data-fieldname");
+                        let my_data = my_local_data[fieldname];
+                        if (my_data != undefined) {
+                            item.value = my_data;
+                        }
+                    }                    
+                }
             {% endif %}
         });
 
