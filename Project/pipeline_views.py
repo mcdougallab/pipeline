@@ -355,3 +355,9 @@ def change_password(request):
         return render(request, "pipeline/change_password.html", context)
     else:
         return login_redirect(request)
+
+
+def entry(request):
+    context = dict(base_context)
+    context["userentry"] = settings.app_settings.get("userentry", {})
+    return render(request, "pipeline/entry.html", context)

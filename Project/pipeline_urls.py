@@ -48,7 +48,7 @@ urlpatterns = [
     path(prebase("browse"), pipeline_views.browse, name="browse"),
     path(prebase("update/<slug:id>"), pipeline_views.update, name="update"),
     path(prebase("admin/"), admin.site.urls),
-    path(prebase("change-password"), pipeline_views.change_password),
+    path(prebase("change-password"), pipeline_views.change_password)
 ]
 
 if "pipeline_annotation" in app_settings:
@@ -58,3 +58,6 @@ if "pipeline_annotation" in app_settings:
 
 if app_settings.get("allow_db_query"):
     urlpatterns.append(path(prebase("query"), pipeline_views.query, name="query"))
+
+if app_settings.get("userentry"):
+    urlpatterns.append(path(prebase("entry"), pipeline_views.entry, name="entry"))

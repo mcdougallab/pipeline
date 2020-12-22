@@ -1,0 +1,71 @@
+{% extends "main.html" %}
+
+{% block head %}
+    <style>
+        .bottom-margin {
+            margin-bottom: 2px;
+        }
+    </style>
+    <script>
+        const signature_entry = `
+        <div class="col-sm-12 data-block" style="border: 1px solid black; padding: 1em; 
+background-color: white; margin-bottom: 1em">
+            {% for field in userentry.fields %}
+                <div class="row bottom-margin">
+                    <div class="col-md-4 text-md-right" title="field.help_text">{{field.name}}</div>
+                    <div class="col-md-8"><input type="text" data-fieldname="{{field.field}}" placeholder="{{field.example}}" style="width:100%"></div>
+                    <div class="d-md-none">&nbsp;</div>                
+                </div>
+            {% endfor %}
+            {% if userentry.allow_multiple %}
+                <br>
+                <div style="text-align: right">
+                    <button class="btn" onclick="add_an_entry_form()">Add 
+    another</button>
+                </div>
+            {% endif %}
+        </div>`;
+        function add_an_entry_form() {
+            $('#entryforms').append(signature_entry);
+        }
+        $(() => {
+            add_an_entry_form();
+        });
+        </script>
+    <style>
+        .highlighted {
+            font-weight: bold;
+        }
+        .notificationzone {
+            position: fixed!important;
+            top: 0;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1>{{userentry.title}}</h1>
+            <p>{{userentry.header}}<br><br>
+                Arunachalam PS et al (2020). Systems biological assessment of immunity 
+    to mild versus severe COVID-19 infection in humans. <i>Science</i>, 369(6508), 
+    1210-1220.
+            </p>
+            <div class="globaldata">
+                {% for field in userentry.global_fields %}
+                    <div class="row bottom-margin">
+                        <div class="col-md-4 text-md-right" title="field.help_text">{{field.name}}</div>
+                        <div class="col-md-8"><input type="text" data-fieldname="{{field.field}}" placeholder="{{field.example}}" style="width:100%"></div>
+                        <div class="d-md-none">&nbsp;</div>                
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div id="entryforms"></div>
+            <div style="text-align: right">
+                <button class="btn" style="background-color: blue; color: 
+    white">Submit</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
