@@ -79,7 +79,12 @@ background-color: white; margin-bottom: 1em">
             <div class="globaldata">
                 {% for field in userentry.global_fields %}
                     <div class="row bottom-margin">
-                        <div class="col-md-4 text-md-right" title="field.help_text">{{field.name}}</div>
+                        <div class="col-md-4 text-md-right" title="{{field.help_text}}">
+                            <a tabindex="0" data-toggle="popover" data-trigger="focus" data-content="{{field.help_text}}" data-placement="top">
+                                <span style="cursor:help">{{field.name}}</span>
+                                <i class="far fa-question-circle"></i>
+                            </a>
+                        </div>
                         <div class="col-md-8"><input type="text" data-fieldname="{{field.field}}" placeholder="{{field.example}}" style="width:100%"></div>
                         <div class="d-md-none">&nbsp;</div>                
                     </div>

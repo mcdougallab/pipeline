@@ -294,7 +294,7 @@ def query(request):
             lookfor = json.loads(lookfor)
             results = []
             for item in models.query(lookfor):
-                del item["_id"]
+                item["_id"] = str(item["_id"])
                 results.append(item)
             context["result"] = json.dumps(results, indent=2)
             return render(request, "pipeline/query_results.html", context)
@@ -360,4 +360,8 @@ def change_password(request):
 def entry(request):
     context = dict(base_context)
     context["userentry"] = settings.app_settings.get("userentry", {})
+    context[
+        "title"
+    ] = f"{base_context['toolname']}: {context['userentry'].get('title')}"
+
     return render(request, "pipeline/entry.html", context)

@@ -48,7 +48,7 @@ urlpatterns = [
     path(prebase("browse"), pipeline_views.browse, name="browse"),
     path(prebase("update/<slug:id>"), pipeline_views.update, name="update"),
     path(prebase("admin/"), admin.site.urls),
-    path(prebase("change-password"), pipeline_views.change_password)
+    path(prebase("change-password"), pipeline_views.change_password),
 ]
 
 if "pipeline_annotation" in app_settings:

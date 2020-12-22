@@ -40,3 +40,9 @@ Permission.objects.get_or_create(
     name="Can directly query pipeline",
     content_type=user_type,
 )
+
+Permission.objects.get_or_create(
+    codename="pipeline_db_user_entered_data",
+    name="Can see pipeline user-entered data",
+    content_type=user_type,
+)
