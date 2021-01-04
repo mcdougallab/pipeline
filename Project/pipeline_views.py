@@ -3,6 +3,7 @@ from django.shortcuts import redirect, render
 from django.http import HttpResponse, Http404
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
+from django.views.decorators.csrf import csrf_protect
 from . import settings
 from . import pipeline_models as models
 import random
@@ -19,6 +20,7 @@ base_context = {
     "allow_db_query": settings.app_settings.get("allow_db_query", False),
     "highlight_fields": settings.app_settings.get("highlight_fields", []),
     "highlight_words": settings.app_settings.get("highlight_words", []),
+    "sitestyles": settings.app_settings.get("css", ""),
 }
 
 try:
@@ -50,7 +52,7 @@ def index(request):
     context.update(base_context)
     return render(request, "index.html", context)
 
-
+@csrf_protect
 def annotate(request):
     if request.user.has_perm("auth.pipeline_annotate"):
         queue = base_context["annotation"]["queue_in"]
@@ -67,6 +69,7 @@ def annotate(request):
         return login_redirect(request)
 
 
+@csrf_protect
 def my_login(request):
     username = request.POST.get("username")
     password = request.POST.get("password")
@@ -87,9 +90,12 @@ def my_logout(request):
     logout(request)
     next_url = request.GET.get("next")
     if next_url:
-        return redirect(next_url)
+        response = redirect(next_url)
     else:
-        return redirect(base_context["pipelinebase"])
+        response = redirect(base_context["pipelinebase"])
+    response.delete_cookie('csrftoken')
+    return response
+
 
 
 def login_redirect(request):
@@ -199,6 +205,7 @@ def _prep_paper_for_annotate(paper):
     return result
 
 
+@csrf_protect
 def review_by_id(request, id=None):
     if request.user.has_perm("auth.pipeline_review"):
         context = {
@@ -238,6 +245,7 @@ def _filter_papers(request, papers):
     return list(_get_subset(papers, filter_rule, start, num))
 
 
+@csrf_protect
 def review(request, status=None):
     if request.user.has_perm("auth.pipeline_review"):
         guidelines = (
@@ -260,6 +268,7 @@ def review(request, status=None):
         return login_redirect(request)
 
 
+@csrf_protect
 def draft_solicitation(request):
     if request.user.has_perm("auth.pipeline_draft_solicitation"):
         try:
@@ -285,6 +294,7 @@ def draft_solicitation(request):
         return login_redirect(request)
 
 
+@csrf_protect
 def query(request):
     """process user submitted db queries"""
     if request.user.has_perm("auth.pipeline_db_query"):
@@ -311,6 +321,7 @@ def thankyou(request):
     return render(request, "pipeline/thankyou.html", context)
 
 
+# NOTE: to allow cookieless users, this does not use csrfprotect
 def update_userdata(request, id=None):
     try:
         userdata = json.loads(request.POST.get("userdata", "{}"))
@@ -320,6 +331,7 @@ def update_userdata(request, id=None):
         return HttpResponse("403 Forbidden", status=403)
 
 
+@csrf_protect
 def update(request, id=None):
     # TODO: as we can expand to more pipeline stages, make sure permissions match fields being updated
     if (
@@ -352,6 +364,7 @@ def update(request, id=None):
         return HttpResponse("403 Forbidden", status=403)
 
 
+@csrf_protect
 def change_password(request):
     if request.user.is_authenticated:
         if request.method == "POST":

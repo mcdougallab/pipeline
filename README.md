@@ -37,6 +37,7 @@ This is developed and tested on a bitnami django stack.
   - `triage_guidelines` -- optional, defaults to empty; shown on review: triage stage. HTML assumed
   - `random_paper_order` -- optional, defaults to false. If true: triage returns 10 random papers
   - `index-content` -- optional, a filename for a file with content for the homepage; content appears for users regardless of if they are logged-in
+  - `css` -- optional; style information included on every page
   - `pipeline_review_buttons` -- list of buttons and their properties for review queues;
     from our experience, we recommend including at least reject, accept, and discussion queues.
     (This list is also used for the "Review" menu.)
