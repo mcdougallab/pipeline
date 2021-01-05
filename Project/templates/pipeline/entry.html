@@ -19,15 +19,20 @@ background-color: white; margin-bottom: 1em">
                             <i class="far fa-question-circle"></i>
                         </a>
                     </div>
-                    <div class="col-md-8"><input type="text" class="userentry" data-fieldname="{{field.field}}" placeholder="{{field.example}}" style="width:100%"></div>
+                    <div class="col-md-8"><{% if field.multiline %}textarea rows="4"{%else%}input{%endif%} type="text" class="userentry" data-fieldname="{{field.field}}" placeholder="{{field.example}}" style="width:100%" {% if field.readonly and not request.user.is_authenticated %}readonly{% endif %}>{% if field.multiline %}</textarea>{% endif %}</div>
                     <div class="d-md-none">&nbsp;</div>                
                 </div>
             {% endfor %}
             {% if userentry.allow_multiple %}
                 <br>
                 <div style="text-align: right">
-                    <button class="btn" onclick="add_an_entry_form()">Add 
-    another</button>
+                    <button class="btn" onclick="add_an_entry_form()">
+                        {% if userentry.multiple_button_name %}
+                            {{ userentry.multiple_button_name }}
+                        {% else %}
+                            Add another
+                        {% endif %}
+                    </button>
                 </div>
             {% endif %}
         </div>`;
@@ -41,7 +46,7 @@ background-color: white; margin-bottom: 1em">
         $(() => {
             add_an_entry_form();
             {% if userdata != "{}" %}
-                for (let item of $(".globaldata").find("input")) {
+                for (let item of $(".globaldata").find("input,textarea")) {
                     let fieldname = item.getAttribute("data-fieldname");
                     let my_data = initial_userdata["global_fields"][fieldname];
                     if (my_data != undefined) {
@@ -59,7 +64,7 @@ background-color: white; margin-bottom: 1em">
                 for (let i = 0; i < initial_userdata.local_data.length; i++) {
                     let my_local_data = initial_userdata.local_data[i];
                     let block = all_data_blocks[i];
-                    for (let item of $(block).find("input")) {
+                    for (let item of $(block).find("input,textarea")) {
                         let fieldname = item.getAttribute("data-fieldname");
                         let my_data = my_local_data[fieldname];
                         if (my_data != undefined) {
@@ -72,7 +77,7 @@ background-color: white; margin-bottom: 1em">
 
         function get_block_data(block) {
             let data = {};
-            for (let item of block.find("input")) {
+            for (let item of block.find("input,textarea")) {
                 data[item.getAttribute("data-fieldname")] = item.value;
             }
             return data;
@@ -114,7 +119,7 @@ background-color: white; margin-bottom: 1em">
         <div class="col-md-12">
             <h1>{{userentry.title}}</h1>
             <p>
-                {{userentry.header}}
+                {{userentry.header|safe}}
             </p>
             <div class="globaldata">
                 {% for field in userentry.global_fields %}
@@ -125,7 +130,7 @@ background-color: white; margin-bottom: 1em">
                                 <i class="far fa-question-circle"></i>
                             </a>
                         </div>
-                        <div class="col-md-8"><input type="text" data-fieldname="{{field.field}}" placeholder="{{field.example}}" style="width:100%"></div>
+                        <div class="col-md-8"><{% if field.multiline %}textarea rows="4"{%else%}input{%endif%} type="text" {% if field.readonly and not request.user.is_authenticated %}readonly{% endif %} data-fieldname="{{field.field}}" placeholder="{{field.example}}" style="width:100%">{% if field.multiline %}</textarea>{% endif %}</div>
                         <div class="d-md-none">&nbsp;</div>                
                     </div>
                 {% endfor %}

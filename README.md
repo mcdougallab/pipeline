@@ -89,6 +89,24 @@ This is developed and tested on a bitnami django stack.
         ],
         "pipeline_metadata_tags_autocomplete_file": "/home/bitnami/metadata_autocomplete.json"
     }
+  - `userentry` -- optional but required for enabling /entry/ pages
+    "userentry": {
+      "title": "...",
+      "logfile": "...",
+      "allow_multiple": true, <-- optional; defaults to false
+      "multiple_button_name": "Add another", <-- optional; defaults as shown
+      "header": "...", <-- can include html
+      "global_fields": [
+        {
+            "name": "visible name",
+            "help_text": "text to appear when clicking the ?",
+            "example": "...",
+            "field": "database name",
+            "readonly": true, <-- optional, defaults to false (readonly for public users; editable for logged-in users)
+            "multiline": true <-- optional, defaults to false
+        },
+      ... <-- more optional and required fields
+    }
 - Apply the django migrations
   `python3 manage.py migrate`
 - Run `python3 setup/permissions.py` script to declare the possible pipeline permissions.
