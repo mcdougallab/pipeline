@@ -89,13 +89,18 @@ This is developed and tested on a bitnami django stack.
         ],
         "pipeline_metadata_tags_autocomplete_file": "/home/bitnami/metadata_autocomplete.json"
     }
+    - `data` -- optional but required for enabling /data/ pages
+      "data": {
+        "enabled": true <-- required for allowing data pages (like entry, but not editable)
+        "header": "..." <-- optional, can include html
+      }
   - `userentry` -- optional but required for enabling /entry/ pages
     "userentry": {
       "title": "...",
       "logfile": "...",
       "allow_multiple": true, <-- optional; defaults to false
       "multiple_button_name": "Add another", <-- optional; defaults as shown
-      "header": "...", <-- can include html
+      "header": "...", <-- optional, can include html
       "global_fields": [
         {
             "name": "visible name",

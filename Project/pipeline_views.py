@@ -52,6 +52,7 @@ def index(request):
     context.update(base_context)
     return render(request, "index.html", context)
 
+
 @csrf_protect
 def annotate(request):
     if request.user.has_perm("auth.pipeline_annotate"):
@@ -93,9 +94,8 @@ def my_logout(request):
         response = redirect(next_url)
     else:
         response = redirect(base_context["pipelinebase"])
-    response.delete_cookie('csrftoken')
+    response.delete_cookie("csrftoken")
     return response
-
 
 
 def login_redirect(request):
@@ -397,5 +397,23 @@ def entry(request, paper_id=None):
     context[
         "title"
     ] = f"{base_context['toolname']}: {context['userentry'].get('title')}"
+    context["header"] = context["userentry"].get("header", "")
+    context["readonly"] = False
+    context["pagetitle"] = context["userentry"].get("title", "")
+    return render(request, "pipeline/entry.html", context)
 
+
+def data(request, paper_id=None):
+    context = dict(base_context)
+    context["userentry"] = settings.app_settings.get("userentry", {})
+    try:
+        context["userdata"] = json.dumps(models.get_userdata(paper_id))
+    except:
+        raise Http404("Not found")
+    context["paper_id"] = paper_id
+    data = settings.app_settings.get("data", {})
+    context["header"] = data.get("header", "")
+    context["title"] = f"{base_context['toolname']}: {data.get('title')}"
+    context["pagetitle"] = data.get("title", "")
+    context["readonly"] = True
     return render(request, "pipeline/entry.html", context)

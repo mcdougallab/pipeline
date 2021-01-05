@@ -19,11 +19,11 @@ background-color: white; margin-bottom: 1em">
                             <i class="far fa-question-circle"></i>
                         </a>
                     </div>
-                    <div class="col-md-8"><{% if field.multiline %}textarea rows="4"{%else%}input{%endif%} type="text" class="userentry" data-fieldname="{{field.field}}" placeholder="{{field.example}}" style="width:100%" {% if field.readonly and not request.user.is_authenticated %}readonly{% endif %}>{% if field.multiline %}</textarea>{% endif %}</div>
+                    <div class="col-md-8"><{% if field.multiline or readonly %}textarea rows="{% if field.multiline %}4{%else%}1{%endif%}"{%else%}input{%endif%} type="text" class="userentry" data-fieldname="{{field.field}}" placeholder="{{field.example}}" style="width:100%" {% if readonly or field.readonly and not request.user.is_authenticated %}readonly{% endif %}>{% if field.multiline or readonly %}</textarea>{% endif %}</div>
                     <div class="d-md-none">&nbsp;</div>                
                 </div>
             {% endfor %}
-            {% if userentry.allow_multiple %}
+            {% if userentry.allow_multiple and not readonly %}
                 <br>
                 <div style="text-align: right">
                     <button class="btn" onclick="add_an_entry_form()">
@@ -92,17 +92,18 @@ background-color: white; margin-bottom: 1em">
             data["local_data"] = local_data;
             return data;
         }
-
-        function submit() {
-            let data = gather_data();
-            $.post(
-                    `{{pipelinebase}}/update_userdata/{{paper_id}}`, 
-                    {"userdata": JSON.stringify(gather_data())}
-                ).fail(() => {document.write('update failed; reload?')})
-                .done(() => {
-                    window.location.href = '{{pipelinebase}}/thankyou';
-                });
-        }
+        {% if not readonly %}
+            function submit() {
+                let data = gather_data();
+                $.post(
+                        `{{pipelinebase}}/update_userdata/{{paper_id}}`, 
+                        {"userdata": JSON.stringify(gather_data())}
+                    ).fail(() => {document.write('update failed; reload?')})
+                    .done(() => {
+                        window.location.href = '{{pipelinebase}}/thankyou';
+                    });
+            }
+        {% endif %}
         </script>
     <style>
         .highlighted {
@@ -117,9 +118,9 @@ background-color: white; margin-bottom: 1em">
 {% block content %}
     <div class="row">
         <div class="col-md-12">
-            <h1>{{userentry.title}}</h1>
+            <h1>{{pagetitle}}</h1>
             <p>
-                {{userentry.header|safe}}
+                {{header|safe}}
             </p>
             <div class="globaldata">
                 {% for field in userentry.global_fields %}
@@ -130,17 +131,18 @@ background-color: white; margin-bottom: 1em">
                                 <i class="far fa-question-circle"></i>
                             </a>
                         </div>
-                        <div class="col-md-8"><{% if field.multiline %}textarea rows="4"{%else%}input{%endif%} type="text" {% if field.readonly and not request.user.is_authenticated %}readonly{% endif %} data-fieldname="{{field.field}}" placeholder="{{field.example}}" style="width:100%">{% if field.multiline %}</textarea>{% endif %}</div>
+                        <div class="col-md-8"><{% if field.multiline or readonly %}textarea rows="{% if field.multiline %}4{%else%}1{%endif%}"{%else%}input{%endif%} type="text" {% if readonly or field.readonly and not request.user.is_authenticated %}readonly{% endif %} data-fieldname="{{field.field}}" placeholder="{{field.example}}" style="width:100%">{% if field.multiline or readonly %}</textarea>{% endif %}</div>
                         <div class="d-md-none">&nbsp;</div>                
                     </div>
                 {% endfor %}
             </div>
 
             <div id="entryforms"></div>
-            <div style="text-align: right">
-                <button class="btn" style="background-color: blue; color: 
-    white" onclick="submit()">Submit</button>
-            </div>
+            {% if not readonly %}
+                <div style="text-align: right">
+                    <button class="btn" style="background-color: blue; color: white" onclick="submit()">Submit</button>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

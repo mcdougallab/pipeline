@@ -73,3 +73,8 @@ if app_settings.get("userentry"):
             name="update_userdata",
         )
     )
+
+if app_settings.get("data"):
+    urlpatterns.append(
+        path(prebase("data/<slug:paper_id>"), pipeline_views.data, name="data")
+    )
