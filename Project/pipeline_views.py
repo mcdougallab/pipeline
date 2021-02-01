@@ -325,6 +325,8 @@ def thankyou(request):
 def update_userdata(request, id=None):
     try:
         userdata = json.loads(request.POST.get("userdata", "{}"))
+        if not userdata:
+            return HttpResponse("400 Bad Request", status=400)
         models.update_userdata(id, userdata)
         return HttpResponse("success")
     except:
