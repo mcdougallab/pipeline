@@ -101,4 +101,6 @@ def get_userdata(paper_id):
 
 
 def query(pattern):
+    if "_id" in pattern:
+        pattern["_id"] = ObjectId(pattern["_id"])
     return collection.find(pattern)
