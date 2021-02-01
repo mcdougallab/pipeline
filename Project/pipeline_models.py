@@ -84,6 +84,7 @@ def update_userdata(paper_id, userdata):
             f.write(
                 json.dumps(
                     {
+                        "paperid": paper_id,
                         "time": datetime.datetime.now().isoformat(),
                         "userdata": json.dumps(userdata),
                     }
