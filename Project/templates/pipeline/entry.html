@@ -17,9 +17,9 @@
             function substitute_values(text) {
                 for (let item of $(".globaldata").find("input,textarea")) {
                     let fieldname = item.getAttribute("data-fieldname");
-                    text = text.replace(`{{${fieldname}}}`, item.value);
+                    text = text.replace("{" + `{${fieldname}}` + "}", item.value);
                 }
-                text = text.replace("{{id}}", id_);
+                text = text.replace("{" + "{id}" + "}", id_);
                 return text;
             }
             function do_send_email() {
