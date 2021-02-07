@@ -8,7 +8,7 @@
     </style>
     <script>
         const id_ = "{{paper_id}}";
-        {% if solicit_email_field and solicit_message_template and solicit_subject_template %}
+        {% if request.user.is_authenticated and solicit_email_field and solicit_message_template and solicit_subject_template %}
             const subject_template = "{{solicit_subject_template}}";
             const email_template = "{{solicit_message_template}}";
             function send_email(recipient, subject, body) {
@@ -163,6 +163,9 @@ background-color: white; margin-bottom: 1em">
             <div id="entryforms"></div>
             {% if not readonly %}
                 <div style="text-align: right">
+                    {% if request.user.is_authenticated and solicit_email_field and solicit_message_template and solicit_subject_template %}
+                        <button class="btn" style="background-color: red; color: white" onclick="do_send_email()">Solicit</button>
+                    {% endif %}
                     <button class="btn" style="background-color: blue; color: white" onclick="submit()">Submit</button>
                 </div>
             {% endif %}
