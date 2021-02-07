@@ -94,6 +94,9 @@ This is developed and tested on a bitnami django stack.
         "enabled": true <-- required for allowing data pages (like entry, but not editable)
         "header": "..." <-- optional, can include html
       }
+  - `solicit_message_template` -- optional, but required for email button on entry pages (note: express newlines as `\\n`)
+  - `solicit_subject_template` -- optional, but required for email button on entry pages
+  - `solicit_email_field` -- optional, but required for email button on entry page; corresponds to a GLOBAL field in `userentry`
   - `userentry` -- optional but required for enabling /entry/ pages
     "userentry": {
       "title": "...",

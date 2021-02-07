@@ -391,6 +391,9 @@ def change_password(request):
 def entry(request, paper_id=None):
     context = dict(base_context)
     context["userentry"] = settings.app_settings.get("userentry", {})
+    context["solicit_message_template"] = settings.app_settings.get("solicit_message_template")
+    context["solicit_subject_template"] = settings.app_settings.get("solicit_subject_template")
+    context["solicit_email_field"] = settings.app_settings.get("solicit_email_field")
     try:
         context["userdata"] = json.dumps(models.get_userdata(paper_id))
     except:

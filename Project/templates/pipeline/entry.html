@@ -8,24 +8,28 @@
     </style>
     <script>
         const id_ = "{{paper_id}}";
-        function send_email(recipient, subject, body) {
-            window.location.href=("mailto:" + recipient + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body));
-        }
-        function substitute_values(text) {
-            for (let item of $(".globaldata").find("input,textarea")) {
-                let fieldname = item.getAttribute("data-fieldname");
-                text = text.replace(`{{${fieldname}}}`, item.value);
+        {% if solicit_email_field and solicit_message_template and solicit_subject_template %}
+            const subject_template = "{{solicit_subject_template}}";
+            const email_template = "{{solicit_message_template}}";
+            function send_email(recipient, subject, body) {
+                window.location.href=("mailto:" + recipient + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body));
             }
-            text = text.replace("{{id}}", id_);
-            return text;
-        }
-        function do_send_email() {
-            send_email(
-                $(`[data-fieldname="${email_field}"]`).val(),
-                substitute_values(subject_template),
-                substitute_values(email_template)
-            );
-        }
+            function substitute_values(text) {
+                for (let item of $(".globaldata").find("input,textarea")) {
+                    let fieldname = item.getAttribute("data-fieldname");
+                    text = text.replace(`{{${fieldname}}}`, item.value);
+                }
+                text = text.replace("{{id}}", id_);
+                return text;
+            }
+            function do_send_email() {
+                send_email(
+                    $(`[data-fieldname="{{solicit_email_field}}"]`).val(),
+                    substitute_values(subject_template),
+                    substitute_values(email_template)
+                );
+            }
+        {% endif %}
         const initial_userdata = {{userdata|safe}};
         const signature_entry = `
         <div class="col-sm-12 data-block" style="border: 1px solid black; padding: 1em; 
