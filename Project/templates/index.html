@@ -6,7 +6,7 @@
         <div class="col-md-12">
             {% if submit_button_text %}
             <div>
-                <button type="button" class="btn btn-primary btn-lg">{{submit_button_text}}</button> {% if not request.user.is_authenticated %} or <a href="/login?next=/">login</a>.{%endif %}
+                <a href="/entry/new" type="button" class="btn btn-primary btn-lg">{{submit_button_text}}</a> {% if not request.user.is_authenticated %} or <a href="/login?next=/">login</a>.{%endif %}
             </div>
             <br>
             <br>

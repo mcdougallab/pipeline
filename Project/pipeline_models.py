@@ -78,6 +78,13 @@ def update(paper_id, username, **kwargs):
 
 
 def update_userdata(paper_id, userdata):
+    if paper_id != "new":
+        collection.update_many(
+            {"_id": ObjectId(paper_id)}, {"$set": {"userdata": userdata}}
+        )
+    else:
+        result = collection.insert_one({"userdata": userdata})
+        paper_id = str(result.inserted_id)
     logfile = settings.app_settings["userentry"].get("logfile")
     if logfile:
         with open(logfile, "a") as f:
@@ -91,10 +98,6 @@ def update_userdata(paper_id, userdata):
                 )
                 + "\n"
             )
-    collection.update_many(
-        {"_id": ObjectId(paper_id)}, {"$set": {"userdata": userdata}}
-    )
-
 
 def get_userdata(paper_id):
     return paper_by_id(paper_id).get("userdata", {})
