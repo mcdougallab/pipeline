@@ -104,3 +104,18 @@ def query(pattern):
     if "_id" in pattern:
         pattern["_id"] = ObjectId(pattern["_id"])
     return collection.find(pattern)
+
+
+def getuserdataquery(pattern):
+    return collection.find(pattern)
+
+
+def getdocsforuserdata():
+    my_query = []
+    for field_data in settings.app_settings["userentry"].get("fields", []):
+        my_field_name = field_data["field"]
+        my_query.append({f"{my_field_name}": {"$exists": True, "$ne": ""}})
+    my_query = {"$or": my_query}
+    my_query = {"$elemMatch": my_query}
+    my_query = {"userdata.local_data": my_query}
+    return collection.find(my_query)

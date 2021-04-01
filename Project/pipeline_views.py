@@ -314,6 +314,16 @@ def query(request):
         return login_redirect(request)
 
 
+@csrf_protect
+def getuserdataquery(request):
+    if request.user.has_perm("auth.pipeline_db_query"):
+        response = HttpResponse(models.getdocsforuserdata())
+        response["Content-Disposition"] = f"attachment; filename=userdata.json"
+        return response
+    else:
+        return login_redirect(request)
+
+
 def thankyou(request):
     context = dict(base_context)
     context["title"] = f"{base_context['toolname']}: Thank you"
@@ -391,8 +401,12 @@ def change_password(request):
 def entry(request, paper_id=None):
     context = dict(base_context)
     context["userentry"] = settings.app_settings.get("userentry", {})
-    context["solicit_message_template"] = settings.app_settings.get("solicit_message_template")
-    context["solicit_subject_template"] = settings.app_settings.get("solicit_subject_template")
+    context["solicit_message_template"] = settings.app_settings.get(
+        "solicit_message_template"
+    )
+    context["solicit_subject_template"] = settings.app_settings.get(
+        "solicit_subject_template"
+    )
     context["solicit_email_field"] = settings.app_settings.get("solicit_email_field")
     try:
         context["userdata"] = json.dumps(models.get_userdata(paper_id))
