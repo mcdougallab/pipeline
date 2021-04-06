@@ -59,6 +59,15 @@ if "pipeline_annotation" in app_settings:
 if app_settings.get("allow_db_query"):
     urlpatterns.append(path(prebase("query"), pipeline_views.query, name="query"))
 
+if app_settings.get("allow_db_query"):
+    urlpatterns.append(
+        path(
+            prebase("getuserdataquery"),
+            pipeline_views.getuserdataquery,
+            name="getuserdataquery",
+        )
+    )
+
 if app_settings.get("userentry"):
     urlpatterns.append(
         path(prebase("entry/<slug:paper_id>"), pipeline_views.entry, name="entry")
