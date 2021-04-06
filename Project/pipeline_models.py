@@ -4,7 +4,6 @@ from django.db import models
 import datetime
 from . import settings
 import json
-from bson.json_util import dumps
 
 mongodb = MongoClient()
 db = mongodb[settings.app_settings["db_name"]]
