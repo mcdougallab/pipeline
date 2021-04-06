@@ -317,7 +317,7 @@ def query(request):
 @csrf_protect
 def getuserdataquery(request):
     if request.user.has_perm("auth.pipeline_db_query"):
-        response = JsonResponse(models.getdocsforuserdata(), safe = False)
+        response = JsonResponse(models.getdocsforuserdata(), safe=False)
         response["Content-Disposition"] = f"attachment; filename=userdata.json"
         return response
     else:
