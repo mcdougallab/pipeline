@@ -1,6 +1,6 @@
 import json
 from django.shortcuts import redirect, render
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, JsonResponse
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.views.decorators.csrf import csrf_protect
@@ -48,8 +48,7 @@ if index_content_filename:
 
 
 def index(request):
-    context = {"title": base_context["toolname"], "index_content": index_content,
-    "submit_button_text": settings.app_settings.get("submit_button_text")}
+    context = {"title": base_context["toolname"], "index_content": index_content}
     context.update(base_context)
     return render(request, "index.html", context)
 
@@ -315,6 +314,16 @@ def query(request):
         return login_redirect(request)
 
 
+@csrf_protect
+def getuserdataquery(request):
+    if request.user.has_perm("auth.pipeline_db_query"):
+        response = JsonResponse(models.getdocsforuserdata(), safe = False)
+        response["Content-Disposition"] = f"attachment; filename=userdata.json"
+        return response
+    else:
+        return login_redirect(request)
+
+
 def thankyou(request):
     context = dict(base_context)
     context["title"] = f"{base_context['toolname']}: Thank you"
@@ -392,16 +401,17 @@ def change_password(request):
 def entry(request, paper_id=None):
     context = dict(base_context)
     context["userentry"] = settings.app_settings.get("userentry", {})
-    context["solicit_message_template"] = settings.app_settings.get("solicit_message_template")
-    context["solicit_subject_template"] = settings.app_settings.get("solicit_subject_template")
+    context["solicit_message_template"] = settings.app_settings.get(
+        "solicit_message_template"
+    )
+    context["solicit_subject_template"] = settings.app_settings.get(
+        "solicit_subject_template"
+    )
     context["solicit_email_field"] = settings.app_settings.get("solicit_email_field")
-    if paper_id == "new":
-        context["userdata"] = "{}"
-    else:
-        try:
-            context["userdata"] = json.dumps(models.get_userdata(paper_id))
-        except:
-            raise Http404("Not found")
+    try:
+        context["userdata"] = json.dumps(models.get_userdata(paper_id))
+    except:
+        raise Http404("Not found")
     context["paper_id"] = paper_id
     context[
         "title"

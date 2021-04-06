@@ -4,6 +4,7 @@ from django.db import models
 import datetime
 from . import settings
 import json
+from bson.json_util import dumps
 
 mongodb = MongoClient()
 db = mongodb[settings.app_settings["db_name"]]
@@ -78,13 +79,6 @@ def update(paper_id, username, **kwargs):
 
 
 def update_userdata(paper_id, userdata):
-    if paper_id != "new":
-        collection.update_many(
-            {"_id": ObjectId(paper_id)}, {"$set": {"userdata": userdata}}
-        )
-    else:
-        result = collection.insert_one({"userdata": userdata})
-        paper_id = str(result.inserted_id)
     logfile = settings.app_settings["userentry"].get("logfile")
     if logfile:
         with open(logfile, "a") as f:
@@ -98,6 +92,10 @@ def update_userdata(paper_id, userdata):
                 )
                 + "\n"
             )
+    collection.update_many(
+        {"_id": ObjectId(paper_id)}, {"$set": {"userdata": userdata}}
+    )
+
 
 def get_userdata(paper_id):
     return paper_by_id(paper_id).get("userdata", {})
@@ -107,3 +105,23 @@ def query(pattern):
     if "_id" in pattern:
         pattern["_id"] = ObjectId(pattern["_id"])
     return collection.find(pattern)
+
+
+def getuserdataquery(pattern):
+    return collection.find(pattern)
+
+
+def getdocsforuserdata():
+    my_query = []
+    for field_data in settings.app_settings["userentry"].get("fields", []):
+        my_field_name = field_data["field"]
+        my_query.append({f"{my_field_name}": {"$exists": True, "$ne": ""}})
+    my_query = {"$or": my_query}
+    my_query = {"$elemMatch": my_query}
+    my_query = {"userdata.local_data": my_query}
+    res = collection.find(my_query)
+    results = []
+    for item in res:
+        item["_id"] = str(item["_id"])
+        results.append(item)
+    return results
