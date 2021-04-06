@@ -4,6 +4,7 @@ from django.db import models
 import datetime
 from . import settings
 import json
+from bson.json_util import dumps
 
 mongodb = MongoClient()
 db = mongodb[settings.app_settings["db_name"]]
@@ -118,4 +119,9 @@ def getdocsforuserdata():
     my_query = {"$or": my_query}
     my_query = {"$elemMatch": my_query}
     my_query = {"userdata.local_data": my_query}
-    return collection.find(my_query)
+    res = collection.find(my_query)
+    results = []
+    for item in res:
+        item["_id"] = str(item["_id"])
+        results.append(item)
+    return results

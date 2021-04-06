@@ -1,6 +1,6 @@
 import json
 from django.shortcuts import redirect, render
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, JsonResponse
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.views.decorators.csrf import csrf_protect
@@ -317,7 +317,7 @@ def query(request):
 @csrf_protect
 def getuserdataquery(request):
     if request.user.has_perm("auth.pipeline_db_query"):
-        response = HttpResponse(models.getdocsforuserdata())
+        response = JsonResponse(models.getdocsforuserdata(), safe = False)
         response["Content-Disposition"] = f"attachment; filename=userdata.json"
         return response
     else:
