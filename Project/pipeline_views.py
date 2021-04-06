@@ -48,8 +48,11 @@ if index_content_filename:
 
 
 def index(request):
-    context = {"title": base_context["toolname"], "index_content": index_content,
-    "submit_button_text": settings.app_settings.get("submit_button_text")}
+    context = {
+        "title": base_context["toolname"],
+        "index_content": index_content,
+        "submit_button_text": settings.app_settings.get("submit_button_text"),
+    }
     context.update(base_context)
     return render(request, "index.html", context)
 

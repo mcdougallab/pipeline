@@ -99,6 +99,7 @@ def update_userdata(paper_id, userdata):
                 + "\n"
             )
 
+
 def get_userdata(paper_id):
     return paper_by_id(paper_id).get("userdata", {})
 
@@ -106,10 +107,6 @@ def get_userdata(paper_id):
 def query(pattern):
     if "_id" in pattern:
         pattern["_id"] = ObjectId(pattern["_id"])
-    return collection.find(pattern)
-
-
-def getuserdataquery(pattern):
     return collection.find(pattern)
 
 
