@@ -76,10 +76,10 @@ def update(paper_id, username, **kwargs):
         )
 
 
-def update_userdata(paper_id, userdata):
+def update_userdata(paper_id, userdata, new_status="user-submitted"):
     if paper_id != "new":
         collection.update_many(
-            {"_id": ObjectId(paper_id)}, {"$set": {"userdata": userdata}}
+            {"_id": ObjectId(paper_id)}, {"$set": {"userdata": userdata, "status": new_status}}
         )
     else:
         result = collection.insert_one({"userdata": userdata})
