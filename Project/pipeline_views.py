@@ -139,7 +139,7 @@ def _nicestr(item):
 
 
 def _process_paper_browse(paper):
-    result = {field: _nicestr(paper[field]) for field in paper["field_order"]}
+    result = {field: _nicestr(paper[field]) for field in paper.get("field_order", [])}
     result["title"] = paper["title"]
     result["_id"] = str(paper["_id"])
     result["status"] = paper["status"]
