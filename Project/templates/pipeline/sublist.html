@@ -1,0 +1,47 @@
+{% extends "main.html" %}
+{% block head %}
+<script>
+    $(() => {
+        $('#counttable').bootstrapTable({
+            pagination: true,
+            search: true,
+            data: {{docs | safe}},
+            formatSearch: () => 'filter'
+        });
+    });
+
+    function id_link(id) {
+        let uri = encodeURI(id);
+        return `<a href="{{request.get_full_path | urlencode}}${uri}">${id}</a>`
+    }
+function formatForks(value,row,index){
+var basepath = {{request.get_full_path | urlencode}}
+return '<a href='+basepath+row.id+'>'+value+'</a>'
+}
+</script>
+
+<style>
+    #counttable > th, td {
+        margin-right: 1em;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Documents: </h1>
+<table id="counttable" data-toggle="counttable">
+                <thead>
+                    <tr>
+                        <th data-sortable="true" data-field="title" data-formatter="formatForks">
+                            Title
+                        </th>
+                        <th data-sortable="true" data-field="dateOf" >  Date
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+{% endblock %}

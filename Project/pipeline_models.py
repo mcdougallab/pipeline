@@ -1,8 +1,10 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+from django.db import models
 import datetime
 from . import settings
 import json
+from bson.json_util import dumps
 
 mongodb = MongoClient()
 db = mongodb[settings.app_settings["db_name"]]
@@ -15,10 +17,10 @@ collection = getattr(db, settings.app_settings["collection_name"])
 
 fieldnames = set()
 for item in collection.find():
-    fieldnames = fieldnames.union(item.get("field_order", []))
+    fieldnames = fieldnames.union(item["field_order"])
 
 if settings.app_settings["browse_fields"] is None:
-    settings.app_settings["browse_fields"] = list(fieldnames)
+    settings.app_settings["browse_fields"] = list(models.fieldnames)
 
 # handle missing status or notes fields
 collection.update_many({"status": None}, {"$set": {"status": "triage"}})
@@ -76,14 +78,29 @@ def update(paper_id, username, **kwargs):
         )
 
 
-def update_userdata(paper_id, userdata, new_status="user-submitted"):
+def update_userdata(paper_id, userdata):
     if paper_id != "new":
         collection.update_many(
-            {"_id": ObjectId(paper_id)}, {"$set": {"userdata": userdata, "status": new_status}}
+            {"_id": ObjectId(paper_id)}, {"$set": {"userdata": userdata}}
         )
     else:
         result = collection.insert_one({"userdata": userdata})
         paper_id = str(result.inserted_id)
+    userdataexists = collection.find(
+        {"_id": ObjectId(paper_id), "userdata": {"$exists": True}}
+    )
+    if userdataexists.count() > 0:
+        collection.find_one_and_update(
+            {"_id": ObjectId(paper_id)},
+            {"$currentDate": {"change_date": True}},
+            upsert=True,
+        )
+    else:
+        collection.find_one_and_update(
+            {"_id": ObjectId(paper_id)},
+            {"$currentDate": {"init_date": True}},
+            upsert=True,
+        )
     logfile = settings.app_settings["userentry"].get("logfile")
     if logfile:
         with open(logfile, "a") as f:
@@ -92,7 +109,7 @@ def update_userdata(paper_id, userdata, new_status="user-submitted"):
                     {
                         "paperid": paper_id,
                         "time": datetime.datetime.now().isoformat(),
-                        "userdata": json.dumps(userdata),
+                        "userdata": userdata,
                     }
                 )
                 + "\n"
@@ -107,6 +124,18 @@ def query(pattern):
     if "_id" in pattern:
         pattern["_id"] = ObjectId(pattern["_id"])
     return collection.find(pattern)
+
+
+def getuserdataquery(pattern):
+    return collection.find(pattern)
+
+
+def getdocsbyuserdata():
+    return collection.find({"userdata": {"$exists": True}})
+
+
+def getdocsbylog():
+    return collection.find({"log": {"$exists": True}, "userdata": {"$exists": True}})
 
 
 def getdocsforuserdata():
