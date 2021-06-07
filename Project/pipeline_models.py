@@ -17,7 +17,7 @@ collection = getattr(db, settings.app_settings["collection_name"])
 
 fieldnames = set()
 for item in collection.find():
-    fieldnames = fieldnames.union(item["field_order"])
+    fieldnames = fieldnames.union(item.get("field_order", []))
 
 if settings.app_settings["browse_fields"] is None:
     settings.app_settings["browse_fields"] = list(models.fieldnames)
