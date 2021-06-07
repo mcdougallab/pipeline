@@ -1,6 +1,5 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-from django.db import models
 import datetime
 from . import settings
 import json
@@ -16,10 +15,10 @@ collection = getattr(db, settings.app_settings["collection_name"])
 
 fieldnames = set()
 for item in collection.find():
-    fieldnames = fieldnames.union(item["field_order"])
+    fieldnames = fieldnames.union(item.get("field_order", []))
 
 if settings.app_settings["browse_fields"] is None:
-    settings.app_settings["browse_fields"] = list(models.fieldnames)
+    settings.app_settings["browse_fields"] = list(fieldnames)
 
 # handle missing status or notes fields
 collection.update_many({"status": None}, {"$set": {"status": "triage"}})
@@ -77,10 +76,10 @@ def update(paper_id, username, **kwargs):
         )
 
 
-def update_userdata(paper_id, userdata):
+def update_userdata(paper_id, userdata, new_status="user-submitted"):
     if paper_id != "new":
         collection.update_many(
-            {"_id": ObjectId(paper_id)}, {"$set": {"userdata": userdata}}
+            {"_id": ObjectId(paper_id)}, {"$set": {"userdata": userdata, "status": new_status}}
         )
     else:
         result = collection.insert_one({"userdata": userdata})
