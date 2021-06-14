@@ -46,6 +46,7 @@ urlpatterns = [
     ),
     path(prebase("browse/<slug:by>"), pipeline_views.browse, name="browse"),
     path(prebase("browse"), pipeline_views.browse, name="browse"),
+    path(prebase("sublist"), pipeline_views.sublist, name="sublist"),
     path(prebase("update/<slug:id>"), pipeline_views.update, name="update"),
     path(prebase("admin/"), admin.site.urls),
     path(prebase("change-password"), pipeline_views.change_password),
