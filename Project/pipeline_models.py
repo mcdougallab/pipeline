@@ -124,18 +124,8 @@ def query(pattern):
     return collection.find(pattern)
 
 
-def getuserdataquery(pattern):
-    return collection.find(pattern)
-
-
 def getdocsbyuserdata():
     return collection.find({"userdata": {"$exists": True}})
-
-
-def getdocsbylog():
-    return collection.find({"log": {"$exists": True}, "userdata": {"$exists": True}})
-
-
 
 def getdocsforuserdata():
     my_query = []
