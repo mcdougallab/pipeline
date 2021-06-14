@@ -465,10 +465,13 @@ def entry(request, paper_id=None):
         "solicit_subject_template"
     )
     context["solicit_email_field"] = settings.app_settings.get("solicit_email_field")
-    try:
-        context["userdata"] = json.dumps(models.get_userdata(paper_id))
-    except:
-        raise Http404("Not found")
+    if paper_id == "new":
+        context["userdata"] = "{}"
+    else:
+        try:
+            context["userdata"] = json.dumps(models.get_userdata(paper_id))
+        except:
+            raise Http404("Not found")
     context["paper_id"] = paper_id
     context[
         "title"
