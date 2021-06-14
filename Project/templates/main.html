@@ -174,6 +174,9 @@
                     {% if perms.auth.pipeline_db_query and allow_db_query %}
                       <a class="dropdown-item" href="{{pipelinebase}}/query">Query database</a>
                     {% endif %}
+                    {% if request.user.is_staff %}
+                      <a class="dropdown-item" href="{{pipelinebase}}/sublist">Submission List</a>
+                    {% endif %}
                   </div>
                 </li>
               {% endif %}

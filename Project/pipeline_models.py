@@ -84,6 +84,21 @@ def update_userdata(paper_id, userdata, new_status="user-submitted"):
     else:
         result = collection.insert_one({"userdata": userdata})
         paper_id = str(result.inserted_id)
+    userdataexists = collection.find(
+        {"_id": ObjectId(paper_id), "userdata": {"$exists": True}}
+    )
+    if userdataexists.count() > 0:
+        collection.find_one_and_update(
+            {"_id": ObjectId(paper_id)},
+            {"$currentDate": {"change_date": True}},
+            upsert=True,
+        )
+    else:
+        collection.find_one_and_update(
+            {"_id": ObjectId(paper_id)},
+            {"$currentDate": {"init_date": True}},
+            upsert=True,
+        )
     logfile = settings.app_settings["userentry"].get("logfile")
     if logfile:
         with open(logfile, "a") as f:
@@ -92,7 +107,7 @@ def update_userdata(paper_id, userdata, new_status="user-submitted"):
                     {
                         "paperid": paper_id,
                         "time": datetime.datetime.now().isoformat(),
-                        "userdata": json.dumps(userdata),
+                        "userdata": userdata,
                     }
                 )
                 + "\n"
@@ -108,6 +123,9 @@ def query(pattern):
         pattern["_id"] = ObjectId(pattern["_id"])
     return collection.find(pattern)
 
+
+def getdocsbyuserdata():
+    return collection.find({"userdata": {"$exists": True}})
 
 def getdocsforuserdata():
     my_query = []
