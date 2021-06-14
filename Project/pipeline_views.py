@@ -305,7 +305,7 @@ def sublist(request, paper_id=None):
             datedocs = models.getdocsbyuserdata()
             results = {}
             for item in docs:
-                results[str(item["_id"])] = item["title"]
+                results[str(item["_id"])] = item.get("title", "")
             updatedates = {}
             for item in datedocs:
                 initdate = item.get("init_date", "")
