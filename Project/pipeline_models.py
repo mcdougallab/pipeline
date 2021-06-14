@@ -1,10 +1,8 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-from django.db import models
 import datetime
 from . import settings
 import json
-from bson.json_util import dumps
 
 mongodb = MongoClient()
 db = mongodb[settings.app_settings["db_name"]]
@@ -20,7 +18,7 @@ for item in collection.find():
     fieldnames = fieldnames.union(item.get("field_order", []))
 
 if settings.app_settings["browse_fields"] is None:
-    settings.app_settings["browse_fields"] = list(models.fieldnames)
+    settings.app_settings["browse_fields"] = list(fieldnames)
 
 # handle missing status or notes fields
 collection.update_many({"status": None}, {"$set": {"status": "triage"}})
@@ -78,10 +76,10 @@ def update(paper_id, username, **kwargs):
         )
 
 
-def update_userdata(paper_id, userdata):
+def update_userdata(paper_id, userdata, new_status="user-submitted"):
     if paper_id != "new":
         collection.update_many(
-            {"_id": ObjectId(paper_id)}, {"$set": {"userdata": userdata}}
+            {"_id": ObjectId(paper_id)}, {"$set": {"userdata": userdata, "status": new_status}}
         )
     else:
         result = collection.insert_one({"userdata": userdata})
@@ -136,6 +134,7 @@ def getdocsbyuserdata():
 
 def getdocsbylog():
     return collection.find({"log": {"$exists": True}, "userdata": {"$exists": True}})
+
 
 
 def getdocsforuserdata():

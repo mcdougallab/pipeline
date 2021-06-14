@@ -136,8 +136,8 @@ def _nicestr(item):
 
 
 def _process_paper_browse(paper):
-    result = {field: _nicestr(paper[field]) for field in paper["field_order"]}
-    result["title"] = paper["title"]
+    result = {field: _nicestr(paper[field]) for field in paper.get("field_order", [])}
+    result["title"] = paper.get("title", "")
     result["_id"] = str(paper["_id"])
     result["status"] = paper["status"]
     return result
@@ -183,10 +183,10 @@ def browse(request, by=None, item=None):
 def _prep_paper_for_review(paper):
     return {
         "id": str(paper["_id"]),
-        "title": paper["title"],
-        "url": paper["url"],
+        "title": paper.get("title", ""),
+        "url": paper.get("url"),
         "notes": paper.get("notes", ""),
-        "metadata": {key: _nicestr(paper[key]) for key in paper["field_order"]},
+        "metadata": {key: _nicestr(paper[key]) for key in paper.get("field_order", [])},
     }
 
 
