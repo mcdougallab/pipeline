@@ -14,9 +14,8 @@
         let uri = encodeURI(id);
         return `<a href="{{request.get_full_path | urlencode}}${uri}">${id}</a>`
     }
-function formatForks(value,row,index){
-var basepath = "{{request.get_full_path | urlencode}}";
-return '<a href='+basepath+row.id+'>'+value+'</a>'
+function formatForks(value, row, index) {
+    return `<a href="/data/{row.id}">{value}</a>`;
 }
 </script>
 
