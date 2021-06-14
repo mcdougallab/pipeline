@@ -124,9 +124,6 @@ def query(pattern):
     return collection.find(pattern)
 
 
-def getdocsbyuserdata():
-    return collection.find({"userdata": {"$exists": True}})
-
 def getdocsforuserdata():
     my_query = []
     for field_data in settings.app_settings["userentry"].get("fields", []):

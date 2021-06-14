@@ -301,13 +301,11 @@ def sublist(request, paper_id=None):
     context["userentry"] = settings.app_settings.get("userentry", {})
     if request.user.has_perm("auth.pipeline_browse"):
         if paper_id is None:
-            docs = models.getdocsbyuserdata()
-            datedocs = models.getdocsbyuserdata()
+            docs = models.getdocsforuserdata()
             results = {}
+            updatedates = {}
             for item in docs:
                 results[str(item["_id"])] = item.get("title", "")
-            updatedates = {}
-            for item in datedocs:
                 initdate = item.get("init_date", "")
                 changedate = item.get("change_date", "")
                 if changedate:
