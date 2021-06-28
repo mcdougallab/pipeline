@@ -30,6 +30,14 @@
                 .done(function() {console.log('Successful update status:', _id, title, url);});
                 $(`.paperlink[data-id="${_id}"]`).attr('href', url).text(title);
             });
+              $('.solicit').click(function() {
+                let item = $(this);
+                let _id = item.attr('data-id');
+                let queue = item.attr('data-queue');
+                $(location).attr('href',
+                    `{{pipelinebase}}/entry/${_id}`
+                ).fail(() => {document.write('redirect failed; reload?')})
+            });
             $('.classifier').click(function() {
                 let item = $(this);
                 let _id = item.attr('data-id');
@@ -95,8 +103,6 @@
             <p>{{guidelines|safe}}</p>
             <div id="reviewpane">
                 <h2>To review:</h2>
-                
-
                 {% for item in items %}
                     <div class="col-sm-12" style="border: 1px solid black; padding: 1em; background-color: white; margin-bottom: 1em" id="box{{item.id}}">
                         <div class="row" style="background-color: white; margin: 1em">
@@ -112,6 +118,9 @@
                                 {% for button in buttons %}
                                     <button type="button" data-id="{{item.id}}" data-queue="{{button.queue}}" class="btn btn-default classifier" {% if button.color %}style="width: 100%!important;background-color: {{button.color}}; color: {% if button.font_color %}{{button.font_color}}{% else %}{% if button.color == "white" %}black{% else %}white{% endif %}{% endif %}"{% endif %}>{{button.name}}</button><br>
                                 {% endfor %}
+                            {% if status  == 'relevant' %}
+                                <br><button type="button" data-id="{{item.id}}" data-queue="{{button.queue}}" class="btn btn-default solicit">Submit Signature</button><br>
+                               {% endif %}
                             </div>
                         </div>
                     </div>
