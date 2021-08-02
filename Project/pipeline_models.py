@@ -81,7 +81,6 @@ def update(paper_id, username, **kwargs):
             {"$push": {"log": {"username": username, "time": now, "data": new_values}}},
         )
 
-
 def update_userdata(paper_id, userdata, new_status="user-submitted"):
     if paper_id != "new":
         collection.update_many(
@@ -120,18 +119,17 @@ def update_userdata(paper_id, userdata, new_status="user-submitted"):
             )
 
 
-def get_userdata(paper_id):
+def get_userdata(paper_id, private_user):
     result = paper_by_id(paper_id).get("userdata", {})
-    result["global_fields"].pop("contributor")
-    result["global_fields"].pop("contributor_organization")
-    result["global_fields"].pop("contributor_email")
+    if not private_user:
+        for field_val in settings.app_settings.get("private_data_fields", []):
+            result["global_fields"].pop(field_val)
     return result
 
 def query(pattern):
     if "_id" in pattern:
         pattern["_id"] = ObjectId(pattern["_id"])
     return collection.find(pattern)
-
 
 def getdocsforuserdata():
     my_query = []
