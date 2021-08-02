@@ -469,7 +469,7 @@ def entry(request, paper_id=None):
         try:
             context["userdata"] = json.dumps(models.get_userdata(paper_id))
         except:
-            raise Http404("Not found")
+            context["userdata"] = "{}"
     context["paper_id"] = paper_id
     context[
         "title"

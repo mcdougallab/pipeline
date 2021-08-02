@@ -23,7 +23,7 @@ if settings.app_settings["browse_fields"] is None:
 # handle missing status or notes fields
 collection.update_many({"status": None}, {"$set": {"status": "triage"}})
 collection.update_many({"notes": None}, {"$set": {"notes": ""}})
-
+collection.update_many({"notes": None}, {"$set": {"notes": ""}})
 
 def count_all_field_instances(field):
     return {
@@ -54,9 +54,15 @@ def statistics():
 
 
 def get_papers(fieldname, fieldvalue):
-    return list(collection.find({fieldname: fieldvalue}))
-
-
+    inp = ""
+    if fieldvalue == 'NaN':
+        fieldvalue = '{ "$eq": NaN }'
+        inp = "{\"" + fieldname + "\" : " + fieldvalue + "}"
+    else:
+        inp =  "{\"" + fieldname + "\" : \"" + fieldvalue + "\"}"
+    patt = json.loads(inp)
+    return list(collection.find(patt))
+#return list(collection.find({fieldname: fieldvalue}))
 def paper_by_id(paper_id):
     return collection.find_one({"_id": ObjectId(paper_id)})
 
@@ -115,8 +121,11 @@ def update_userdata(paper_id, userdata, new_status="user-submitted"):
 
 
 def get_userdata(paper_id):
-    return paper_by_id(paper_id).get("userdata", {})
-
+    result = paper_by_id(paper_id).get("userdata", {})
+    result["global_fields"].pop("contributor")
+    result["global_fields"].pop("contributor_organization")
+    result["global_fields"].pop("contributor_email")
+    return result
 
 def query(pattern):
     if "_id" in pattern:
