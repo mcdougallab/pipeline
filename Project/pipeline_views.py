@@ -27,9 +27,9 @@ base_context = {
 
 try:
     with open(
-            settings.app_settings["pipeline_annotation"][
-                "pipeline_metadata_autocomplete_file"
-            ]
+        settings.app_settings["pipeline_annotation"][
+            "pipeline_metadata_autocomplete_file"
+        ]
     ) as f:
         metadata_autcomplete_tags = json.load(f)
 except:
@@ -349,6 +349,21 @@ def sublist(request, paper_id=None):
         return login_redirect(request)
 
 
+# datetimes are not JSON serializable
+def textify_datetime(obj):
+    if isinstance(obj, list):
+        loop_over = range(len(obj))
+    else:
+        loop_over = obj.keys()
+    for key in loop_over:
+        item = obj[key]
+        if isinstance(item, list) or isinstance(item, dict):
+            obj[key] = textify_datetime(item)
+        elif isinstance(item, datetime):
+            obj[key] = str(item)
+    return obj
+
+
 @csrf_protect
 def query(request):
     """process user submitted db queries"""
@@ -360,7 +375,7 @@ def query(request):
             results = []
             for item in models.query(lookfor):
                 item["_id"] = str(item["_id"])
-                results.append(item)
+                results.append(textify_datetime(item))
             context["result"] = json.dumps(results, indent=2)
             return render(request, "pipeline/query_results.html", context)
         else:
@@ -402,9 +417,9 @@ def update_userdata(request, id=None):
 def update(request, id=None):
     # TODO: as we can expand to more pipeline stages, make sure permissions match fields being updated
     if (
-            request.user.has_perm("auth.pipeline_review")
-            or request.user.has_perm("auth.pipeline_annotate")
-            or request.user.has_perm("auth.pipeline_draft_solicitation")
+        request.user.has_perm("auth.pipeline_review")
+        or request.user.has_perm("auth.pipeline_annotate")
+        or request.user.has_perm("auth.pipeline_draft_solicitation")
     ):
         changes = {}
         for key, value in request.POST.items():
@@ -412,14 +427,14 @@ def update(request, id=None):
                 # these can be changed by anybody who can do updates
                 pass
             elif (
-                    key == "annotation.metadata_tags" or key.startswith("annotation.field.")
+                key == "annotation.metadata_tags" or key.startswith("annotation.field.")
             ) and request.user.has_perm("auth.pipeline_annotate"):
                 if key == "annotation.metadata_tags":
                     value = json.loads(value)
             elif request.user.has_perm("auth.pipeline_draft_solicitation") and key in (
-                    "email",
-                    "email_address",
-                    "email_subject",
+                "email",
+                "email_address",
+                "email_subject",
             ):
                 pass
             else:
