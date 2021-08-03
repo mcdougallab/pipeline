@@ -1,8 +1,10 @@
-from pymongo import MongoClient
-from bson.objectid import ObjectId
 import datetime
-from . import settings
 import json
+
+from bson.objectid import ObjectId
+from pymongo import MongoClient
+
+from . import settings
 
 mongodb = MongoClient()
 db = mongodb[settings.app_settings["db_name"]]
@@ -23,7 +25,7 @@ if settings.app_settings["browse_fields"] is None:
 # handle missing status or notes fields
 collection.update_many({"status": None}, {"$set": {"status": "triage"}})
 collection.update_many({"notes": None}, {"$set": {"notes": ""}})
-collection.update_many({"notes": None}, {"$set": {"notes": ""}})
+
 
 def count_all_field_instances(field):
     return {
