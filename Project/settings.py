@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 import json
 
-SETTINGS_PATH = "/home/bitnami/app-settings.json"
+SETTINGS_PATH = "app-settings.json"
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -50,8 +50,8 @@ SECRET_KEY = app_settings["secret_key"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["10.0.2.15"]
-ALLOWED_HOSTS.append("127.0.0.1")
+ALLOWED_HOSTS = ["127.0.0.1"]
+ALLOWED_HOSTS.append("localhost")
 
 # Application definition
 
@@ -146,7 +146,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
+
 STATIC_URL = "/Project/static/"
 
 # avoids an issue where the system overrides this variable
-ALLOWED_HOSTS.append("localhost")
+#ALLOWED_HOSTS.append("localhost")

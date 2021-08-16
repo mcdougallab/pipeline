@@ -1,8 +1,10 @@
-from pymongo import MongoClient
-from bson.objectid import ObjectId
 import datetime
-from . import settings
 import json
+
+from bson.objectid import ObjectId
+from pymongo import MongoClient
+
+from . import settings
 
 mongodb = MongoClient()
 db = mongodb[settings.app_settings["db_name"]]
@@ -54,9 +56,15 @@ def statistics():
 
 
 def get_papers(fieldname, fieldvalue):
-    return list(collection.find({fieldname: fieldvalue}))
-
-
+    inp = ""
+    if fieldvalue == 'NaN':
+        fieldvalue = '{ "$eq": NaN }'
+        inp = "{\"" + fieldname + "\" : " + fieldvalue + "}"
+    else:
+        inp =  "{\"" + fieldname + "\" : \"" + fieldvalue + "\"}"
+    patt = json.loads(inp)
+    return list(collection.find(patt))
+#return list(collection.find({fieldname: fieldvalue}))
 def paper_by_id(paper_id):
     return collection.find_one({"_id": ObjectId(paper_id)})
 
@@ -74,7 +82,6 @@ def update(paper_id, username, **kwargs):
             {"_id": ObjectId(paper_id)},
             {"$push": {"log": {"username": username, "time": now, "data": new_values}}},
         )
-
 
 def update_userdata(paper_id, userdata, new_status="user-submitted"):
     if paper_id != "new":
@@ -115,15 +122,17 @@ def update_userdata(paper_id, userdata, new_status="user-submitted"):
             )
 
 
-def get_userdata(paper_id):
-    return paper_by_id(paper_id).get("userdata", {})
-
+def get_userdata(paper_id, private_user):
+    result = paper_by_id(paper_id).get("userdata", {})
+    if not private_user:
+        for field_val in settings.app_settings.get("private_data_fields", []):
+            result["global_fields"].pop(field_val)
+    return result
 
 def query(pattern):
     if "_id" in pattern:
         pattern["_id"] = ObjectId(pattern["_id"])
     return collection.find(pattern)
-
 
 def getdocsforuserdata():
     my_query = []

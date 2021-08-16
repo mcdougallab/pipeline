@@ -335,7 +335,7 @@ def sublist(request, paper_id=None):
             return render(request, "pipeline/sublist.html", context)
         else:
             try:
-                context["userdata"] = json.dumps(models.get_userdata(paper_id))
+                context["userdata"] = json.dumps(models.get_userdata(paper_id, False))
             except:
                 raise Http404("Not found")
             context["paper_id"] = paper_id
@@ -482,9 +482,9 @@ def entry(request, paper_id=None):
         context["userdata"] = "{}"
     else:
         try:
-            context["userdata"] = json.dumps(models.get_userdata(paper_id))
+            context["userdata"] = json.dumps(models.get_userdata(paper_id, False))
         except:
-            raise Http404("Not found")
+            context["userdata"] = "{}"
     context["paper_id"] = paper_id
     context[
         "title"
@@ -496,10 +496,13 @@ def entry(request, paper_id=None):
 
 
 def data(request, paper_id=None):
+    private_user = False
     context = dict(base_context)
     context["userentry"] = settings.app_settings.get("userentry", {})
+    if request.user.is_authenticated:
+        private_user = True
     try:
-        context["userdata"] = json.dumps(models.get_userdata(paper_id))
+        context["userdata"] = json.dumps(models.get_userdata(paper_id, private_user))
     except:
         raise Http404("Not found")
     context["paper_id"] = paper_id

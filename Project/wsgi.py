@@ -9,10 +9,16 @@ https://docs.djangoproject.com/en/3.0/howto/deployment/wsgi/
 
 import os, sys
 
-sys.path.append("/opt/bitnami/apps/django/django_projects/Project")
-os.environ.setdefault(
-    "PYTHON_EGG_CACHE", "/opt/bitnami/apps/django/django_projects/Project/egg_cache"
-)
+#Calculate the path based on the location of the WSGI script.
+apache_configuration= os.path.dirname(__file__)
+project = os.path.dirname(apache_configuration)
+workspace = os.path.dirname(project)
+sys.path.append(workspace)
+
+#sys.path.append("/opt/bitnami/apps/django/django_projects/Project")
+#os.environ.setdefault(
+#    "PYTHON_EGG_CACHE", "/opt/bitnami/apps/django/django_projects/Project/egg_cache"
+#)
 
 
 from django.core.wsgi import get_wsgi_application
