@@ -12,7 +12,7 @@
             const subject_template = "{{solicit_subject_template}}";
             const email_template = "{{solicit_message_template}}";
             function send_email(recipient, subject, body) {
-                window.location.href=("mailto:" + recipient + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body));
+                window.location.href = ("mailto:" + recipient + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body));
             }
             function substitute_values(text) {
                 for (let item of $(".globaldata").find("input,textarea")) {
@@ -42,8 +42,12 @@ background-color: white; margin-bottom: 1em">
                             <i class="far fa-question-circle"></i>
                         </a>
                     </div>
-                    <div class="col-md-8"><{% if field.multiline or readonly %}textarea rows="{% if field.multiline %}4{%else%}1{%endif%}"{%else%}input{%endif%} type="text" class="userentry" data-fieldname="{{field.field}}" {% if not readonly %} placeholder="{{field.example}}" {% endif %} style="width:100%" {% if readonly or field.readonly and not request.user.is_authenticated %}readonly{% endif %}>{% if field.multiline or readonly %}</textarea>{% endif %}</div>
-                    <div class="d-md-none">&nbsp;</div>                
+                    <div class="col-md-8"><{% if field.multiline or readonly %}textarea rows="{% if field.multiline %}4
+        {%else%}1{%endif%}"{%else%}input{%endif%} type="text" class="userentry" data-fieldname="{{field.field}}"
+             placeholder="{{field.example}}"   style="width:100%"
+            {% if readonly or field.readonly and not request.user.is_authenticated %}readonly{% endif %} >
+            {% if field.multiline or readonly %}</textarea>{% endif %}</div>
+                    <div class="d-md-none">&nbsp;</div>
                 </div>
             {% endfor %}
             {% if userentry.allow_multiple and not readonly %}
@@ -59,13 +63,16 @@ background-color: white; margin-bottom: 1em">
                 </div>
             {% endif %}
         </div>`;
+
         function add_an_entry_form() {
             $('#entryforms').append(signature_entry);
             enable_popovers();
         }
+
         function enable_popovers() {
             $('[data-toggle="popover"]').popover();
         }
+
         $(() => {
             add_an_entry_form();
             {% if userdata != "{}" %}
@@ -93,7 +100,7 @@ background-color: white; margin-bottom: 1em">
                         if (my_data != undefined) {
                             item.value = my_data;
                         }
-                    }                    
+                    }
                 }
             {% endif %}
         });
@@ -119,21 +126,24 @@ background-color: white; margin-bottom: 1em">
             function submit() {
                 let data = gather_data();
                 $.post(
-                        `{{pipelinebase}}/update_userdata/{{paper_id}}`, 
-                        {"userdata": JSON.stringify(gather_data())}
-                    ).fail(() => {document.write('update failed; reload?')})
+                    `{{pipelinebase}}/update_userdata/{{paper_id}}`,
+                    {"userdata": JSON.stringify(gather_data())}
+                ).fail(() => {
+                    document.write('update failed; reload?')
+                })
                     .done(() => {
                         window.location.href = '{{pipelinebase}}/thankyou';
                     });
             }
         {% endif %}
-        </script>
+    </script>
     <style>
         .highlighted {
             font-weight: bold;
         }
+
         .notificationzone {
-            position: fixed!important;
+            position: fixed !important;
             top: 0;
         }
     </style>
@@ -141,34 +151,58 @@ background-color: white; margin-bottom: 1em">
 {% block content %}
     <div class="row">
         <div class="col-md-12">
-            <h1>{{pagetitle}}</h1>
+            <h1>{{ pagetitle }}</h1>
             <p>
-                {{header|safe}}
+                {{ header|safe }}
             </p>
             <div class="globaldata">
                 {% for field in userentry.global_fields %}
                     <div class="row bottom-margin">
-                        <div class="col-md-4 text-md-right" title="{{field.help_text}}">
-                            <a tabindex="0" data-toggle="popover" data-trigger="focus" data-content="{{field.help_text}}" data-placement="top">
-                                <span style="cursor:help">{{field.name}}</span>
+                        <div class="col-md-4 text-md-right" title="{{ field.help_text }}">
+                            <a tabindex="0" data-toggle="popover" data-trigger="focus"
+                               data-content="{{ field.help_text }}" data-placement="top">
+                                <span style="cursor:help">{{ field.name }}</span>
                                 <i class="far fa-question-circle"></i>
                             </a>
                         </div>
-                        <div class="col-md-8"><{% if field.multiline or readonly %}textarea rows="{% if field.multiline %}4{%else%}1{%endif%}"{%else%}input{%endif%} type="text" {% if readonly or field.readonly and not request.user.is_authenticated %}readonly{% endif %} data-fieldname="{{field.field}}" {% if not readonly %} placeholder="{{field.example}}" {% endif %} style="width:100%">{% if field.multiline or readonly %}</textarea>{% endif %}</div>
-                        <div class="d-md-none">&nbsp;</div>                
+                        <div class="col-md-8"><{% if field.multiline or readonly %}textarea
+                            rows="{% if field.multiline %}4{% else %}1{% endif %}"
+                            {% else %}input{% endif %} type="text"
+                                {% if paper_id != "new" and field.name == "Paper" and not request.user.is_authenticated %}
+                            readonly="true"  data-fieldname="{{ field.field }}"
+                            placeholder="{{ field.example }}"
+                            style="width:100%">{% if field.multiline or readonly %}</textarea>{% endif %}</div>
+                                {% else %}
+                                    {% if readonly or field.readonly and not request.user.is_authenticated %}
+                                        readonly="false"
+                                    {% endif %}
+                                    data-fieldname="{{ field.field }}"
+                                    placeholder="{{ field.example }}"
+                                    style="width:100%"></textarea>
+                                    </div>
+                                {% endif %}
+                    <div class="d-md-none">&nbsp;</div>
                     </div>
                 {% endfor %}
-            </div>
-
-            <div id="entryforms"></div>
-            {% if not readonly %}
-                <div style="text-align: right">
-                    {% if request.user.is_authenticated and solicit_email_field and solicit_message_template and solicit_subject_template %}
-                        <button class="btn" style="background-color: red; color: white" onclick="do_send_email()">Solicit</button>
-                    {% endif %}
-                    <button class="btn" style="background-color: blue; color: white" onclick="submit()">Submit</button>
-                </div>
-            {% endif %}
         </div>
+
+        <div id="entryforms"></div>
+        {% if not readonly %}
+            <div style="text-align: right">
+                {% if request.user.is_authenticated and solicit_email_field and solicit_message_template and solicit_subject_template %}
+                    <button class="btn" style="background-color: red; color: white" onclick="do_send_email()">
+                        Solicit
+                    </button>
+                {% endif %}
+                <button class="btn" style="background-color: blue; color: white" onclick="submit()">Submit</button>
+            </div>
+        {% endif %}
+    </div>
     </div>
 {% endblock %}
+{% comment %}
+
+<textarea rows="4" type="text" data-fieldname="paper" placeholder="Smith et al. (2020) Immune signatures of Covid-19. J Important Science." style="width:100%"></textarea>
+
+<textarea rows="4" type="text" class="userentry" data-fieldname="description" placeholder="Genes up-regulated in PBMCs of young adults at 1 day after hospital admission when comparing severe vs. mild disease in COVID-19." style="width:100%">            </textarea>
+{% endcomment %}
