@@ -45,8 +45,7 @@ background-color: white; margin-bottom: 1em">
                     <div class="col-md-8"><{% if field.multiline or readonly %}textarea rows="{% if field.multiline %}4
         {%else%}1{%endif%}"{%else%}input{%endif%} type="text" class="userentry" data-fieldname="{{field.field}}"
              placeholder="{{field.example}}"   style="width:100%"
-            {% if readonly or field.readonly and not request.user.is_authenticated %}readonly{% endif %} >
-            {% if field.multiline or readonly %}</textarea>{% endif %}</div>
+            {% if readonly or field.readonly and not request.user.is_authenticated %}readonly{% endif %} >{% if field.multiline or readonly %}</textarea>{% endif %}</div>
                     <div class="d-md-none">&nbsp;</div>
                 </div>
             {% endfor %}
