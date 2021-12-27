@@ -20,6 +20,7 @@ base_context = {
     "annotation": settings.app_settings.get("pipeline_annotation"),
     "has_draft_solicitations": "draft_solicitations" in settings.app_settings,
     "allow_db_query": settings.app_settings.get("allow_db_query", False),
+    "public_submission_list": settings.app_settings.get("public_submission_list", False),
     "highlight_fields": settings.app_settings.get("highlight_fields", []),
     "highlight_words": settings.app_settings.get("highlight_words", []),
     "sitestyles": settings.app_settings.get("css", ""),
@@ -299,7 +300,7 @@ def draft_solicitation(request):
 def sublist(request, paper_id=None):
     context = dict(base_context)
     context["userentry"] = settings.app_settings.get("userentry", {})
-    if request.user.has_perm("auth.pipeline_browse"):
+    if request.user.has_perm("auth.pipeline_browse") or context["public_submission_list"]:
         if paper_id is None:
             docs = models.getdocsforuserdata()
             results = {}

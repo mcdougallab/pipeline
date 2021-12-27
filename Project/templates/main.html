@@ -174,13 +174,12 @@
                     {% if perms.auth.pipeline_db_query and allow_db_query %}
                       <a class="dropdown-item" href="{{pipelinebase}}/query">Query database</a>
                     {% endif %}
-                    {% if request.user.is_staff %}
-                      <a class="dropdown-item" href="{{pipelinebase}}/sublist">Submission List</a>
-                    {% endif %}
                   </div>
                 </li>
               {% endif %}
-              {% if perms.auth.pipeline_review or perms.auth.pipeline_statistics %}
+            {% endif %}
+            {% if request.user.is_authenticated or public_submission_list %}
+              {% if perms.auth.pipeline_review or perms.auth.pipeline_statistics or public_submission_list %}
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-expanded="False">Review</a>
                   <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" style="padding:15px">
@@ -194,6 +193,9 @@
                     {% endif %}
                     {% if perms.auth.pipeline_statistics %}
                       <a class="dropdown-item" href="{{pipelinebase}}/statistics">Statistics</a>
+                    {% endif %}
+                    {% if request.user.is_staff or public_submission_list %}
+                      <a class="dropdown-item" href="{{pipelinebase}}/sublist">Submission List</a>
                     {% endif %}
                   </div>
                 </li>

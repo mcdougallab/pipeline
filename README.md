@@ -32,6 +32,7 @@ This is developed and tested on a bitnami django stack.
   - `collection_name` -- this is the collection where the pipeline data will go
   - `pipelinebase` -- optional, but set to e.g. `pipeline` if you want links to go to start with `/pipeline/`
   - `footerhtml` -- optional, but anything you put here will appear in the footer of every page
+  - `public_submission_list` -- optional, defaults to False (makes the submission list public)
   - `toolname` -- optional, defaults to "Pipeline"
   - `browse_fields` -- optional, defaults to all
   - `triage_guidelines` -- optional, defaults to empty; shown on review: triage stage. HTML assumed
