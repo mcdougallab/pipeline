@@ -150,6 +150,7 @@ def getdocsforuserdata():
     res = collection.find(my_query)
     results = []
     for item in res:
-        item["_id"] = str(item["_id"])
-        results.append(item)
+        if item.get("visible", True):
+            item["_id"] = str(item["_id"])
+            results.append(item)
     return results

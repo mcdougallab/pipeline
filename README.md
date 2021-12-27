@@ -178,6 +178,9 @@ For performance reasons, the `status` attribute of the documents should be index
   may not be appropriate if this is one django app on a more complicated website.
  - the settings file may need the full path to `TEMPLATES["DIRS"]`
 
+## Miscellaneous hints
+- Set the field `visible` to `False` on any document to have it not appear in the submission list (or the download version of that list); this is useful for documents that you want to rereview for interannotator agreement
+
 ## On combining with other tools
 - Make sure that the other tools include javascript code to support CSRF in their main.html, as is done here.
 
