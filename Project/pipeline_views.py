@@ -314,7 +314,10 @@ def sublist(request, paper_id=None):
                 else:
                     idate = initdate
                 if len(str(idate)) > 0:
-                    d1 = datetime.strptime(str(idate), "%Y-%m-%d %H:%M:%S.%f")
+                    try:
+                        d1 = datetime.strptime(str(idate), "%Y-%m-%d %H:%M:%S.%f")
+                    except ValueError:
+                        d1 = datetime.strptime(str(idate), "%Y-%m-%dT%H:%M:%S.%f")
                     new_format = "%Y-%m-%d"
                     updatedates[str(item["_id"])] = d1.strftime(new_format)
                 else:
