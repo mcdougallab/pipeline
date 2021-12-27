@@ -156,32 +156,34 @@ background-color: white; margin-bottom: 1em">
             </p>
             <div class="globaldata">
                 {% for field in userentry.global_fields %}
-                    <div class="row bottom-margin">
-                        <div class="col-md-4 text-md-right" title="{{ field.help_text }}">
-                            <a tabindex="0" data-toggle="popover" data-trigger="focus"
-                               data-content="{{ field.help_text }}" data-placement="top">
-                                <span style="cursor:help">{{ field.name }}</span>
-                                <i class="far fa-question-circle"></i>
-                            </a>
-                        </div>
-                        <div class="col-md-8"><{% if field.multiline or readonly %}textarea
-                            rows="{% if field.multiline %}4{% else %}1{% endif %}"
-                            {% else %}input{% endif %} type="text"
-                                {% if paper_id != "new" and field.name == "Paper" and not request.user.is_authenticated %}
-                            readonly="true"  data-fieldname="{{ field.field }}"
-                            placeholder="{{ field.example }}"
-                            style="width:100%">{% if field.multiline or readonly %}</textarea>{% endif %}</div>
-                                {% else %}
-                                    {% if readonly or field.readonly and not request.user.is_authenticated %}
-                                        readonly="false"
+                    {% if not field.field in private_data_fields or request.user.is_authenticated %}
+                        <div class="row bottom-margin">
+                            <div class="col-md-4 text-md-right" title="{{ field.help_text }}">
+                                <a tabindex="0" data-toggle="popover" data-trigger="focus"
+                                data-content="{{ field.help_text }}" data-placement="top">
+                                    <span style="cursor:help">{{ field.name }}</span>
+                                    <i class="far fa-question-circle"></i>
+                                </a>
+                            </div>
+                            <div class="col-md-8"><{% if field.multiline or readonly %}textarea
+                                rows="{% if field.multiline %}4{% else %}1{% endif %}"
+                                {% else %}input{% endif %} type="text"
+                                    {% if paper_id != "new" and field.name == "Paper" and not request.user.is_authenticated %}
+                                readonly="true"  data-fieldname="{{ field.field }}"
+                                placeholder="{{ field.example }}"
+                                style="width:100%">{% if field.multiline or readonly %}</textarea>{% endif %}</div>
+                                    {% else %}
+                                        {% if readonly or field.readonly and not request.user.is_authenticated %}
+                                            readonly="false"
+                                        {% endif %}
+                                        data-fieldname="{{ field.field }}"
+                                        placeholder="{{ field.example }}"
+                                        style="width:100%"></textarea>
+                                        </div>
                                     {% endif %}
-                                    data-fieldname="{{ field.field }}"
-                                    placeholder="{{ field.example }}"
-                                    style="width:100%"></textarea>
-                                    </div>
-                                {% endif %}
-                    <div class="d-md-none">&nbsp;</div>
-                    </div>
+                        <div class="d-md-none">&nbsp;</div>
+                        </div>
+                    {% endif %}
                 {% endfor %}
         </div>
 

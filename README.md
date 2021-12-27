@@ -117,6 +117,8 @@ This is developed and tested on a bitnami django stack.
         },
       ... <-- more optional and required fields
     }
+  - `private_data_fields` -- optional; if included these fields will not show up on the user entry/data view pages unless the user is logged in
+  - `public_fields` -- optional, but without it non-authenticated users will not be able to download any data; lists which fields are available (dot notation is used to include only parts of a tree); functions independently from `private_data_fields` above
 - Apply the django migrations
   `python3 manage.py migrate`
 - Run `python3 setup/permissions.py` script to declare the possible pipeline permissions.

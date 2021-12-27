@@ -9,6 +9,7 @@ from . import pipeline_models as models
 import random
 import datetime
 from datetime import datetime
+import copy
 
 base_context = {
     "footerhtml": settings.app_settings.get("footerhtml", ""),
@@ -24,6 +25,7 @@ base_context = {
     "highlight_fields": settings.app_settings.get("highlight_fields", []),
     "highlight_words": settings.app_settings.get("highlight_words", []),
     "sitestyles": settings.app_settings.get("css", ""),
+    "private_data_fields": set(settings.app_settings.get("private_data_fields", []))
 }
 
 try:
@@ -388,14 +390,49 @@ def query(request):
         return login_redirect(request)
 
 
+def _get_field_data(obj, name):
+    # raises a KeyError if not found
+    if name == "*":
+        return obj
+    elif '.' not in name:
+        return {name: obj[name]}
+    else:
+        pieces = name.split(".")
+        return {pieces[0]: _get_field_data(obj[pieces[0]], ".".join(pieces[1:]))}
+
+
+def _delete_from_dictionary_except(m, keep_fields):
+    # NOTE: this modifies m
+    fieldnames = list(m.keys())
+    for field in fieldnames:
+        if field not in keep_fields:
+            subkeep = {f.split('.', 1)[1] for f in keep_fields if f.startswith(f"{field}.")}
+            if subkeep:
+                _delete_from_dictionary_except(m[field], subkeep)
+            else:
+                del m[field]
+
+
+def filter_models_for_public(all_models):
+    keep_fields = set(settings.app_settings.get("public_fields", []))
+    result = []
+    for m in all_models:
+        new_model = copy.deepcopy(m)
+        _delete_from_dictionary_except(new_model, keep_fields)
+        result.append(new_model)
+    return result
+
 @csrf_protect
 def getuserdataquery(request):
     if request.user.has_perm("auth.pipeline_db_query"):
         response = JsonResponse(models.getdocsforuserdata(), safe=False)
         response["Content-Disposition"] = f"attachment; filename=userdata.json"
-        return response
+    elif base_context["public_submission_list"]:
+        response = JsonResponse(filter_models_for_public(models.getdocsforuserdata()), safe=False)
+        response["Content-Disposition"] = f"attachment; filename=userdata.json"
     else:
-        return login_redirect(request)
+        response = login_redirect(request)
+    return response
 
 
 def thankyou(request):
