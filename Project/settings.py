@@ -150,4 +150,4 @@ USE_TZ = True
 STATIC_URL = "/Project/static/"
 
 # avoids an issue where the system overrides this variable
-#ALLOWED_HOSTS.append("localhost")
+# ALLOWED_HOSTS.append("localhost")

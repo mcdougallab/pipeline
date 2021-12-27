@@ -57,14 +57,16 @@ def statistics():
 
 def get_papers(fieldname, fieldvalue):
     inp = ""
-    if fieldvalue == 'NaN':
+    if fieldvalue == "NaN":
         fieldvalue = '{ "$eq": NaN }'
-        inp = "{\"" + fieldname + "\" : " + fieldvalue + "}"
+        inp = '{"' + fieldname + '" : ' + fieldvalue + "}"
     else:
-        inp =  "{\"" + fieldname + "\" : \"" + fieldvalue + "\"}"
+        inp = '{"' + fieldname + '" : "' + fieldvalue + '"}'
     patt = json.loads(inp)
     return list(collection.find(patt))
-#return list(collection.find({fieldname: fieldvalue}))
+
+
+# return list(collection.find({fieldname: fieldvalue}))
 def paper_by_id(paper_id):
     return collection.find_one({"_id": ObjectId(paper_id)})
 
@@ -82,6 +84,7 @@ def update(paper_id, username, **kwargs):
             {"_id": ObjectId(paper_id)},
             {"$push": {"log": {"username": username, "time": now, "data": new_values}}},
         )
+
 
 def update_userdata(paper_id, userdata, new_status="user-submitted"):
     if paper_id != "new":
@@ -129,10 +132,12 @@ def get_userdata(paper_id, private_user):
             result["global_fields"].pop(field_val)
     return result
 
+
 def query(pattern):
     if "_id" in pattern:
         pattern["_id"] = ObjectId(pattern["_id"])
     return collection.find(pattern)
+
 
 def getdocsforuserdata():
     my_query = []
